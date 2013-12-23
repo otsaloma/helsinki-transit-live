@@ -1,0 +1,24 @@
+Helsinki Transit Live shows real-time locations of Helsinki Regional
+Transport (HSL) public transportation vehicles. It uses the HSL Live
+API [1] and icons from the official web interface [2].
+
+ [1] http://developer.reittiopas.fi/pages/en/other-apis.php
+ [2] http://transport.wspgroup.fi/hklkartta/
+
+Helsinki Transit Live has been written for Sailfish OS, but should
+probably work with minor modifications on other platforms where Python
+and basic Qt and QML components are available.
+
+Helsinki Transit Live is free software released under the GNU General
+Public License (GPL), see the file 'COPYING' for details.
+
+To run Helsinki Transit Live on a Sailfish system, you need
+
+ * qt5-qtdeclarative-import-location
+ * qt5-qtdeclarative-import-positioning
+ * qt5-plugin-geoservices-nokia
+ * qt5-plugin-geoservices-osm
+ * pyotherside-qml-plugin-python3-qt5
+
+For testing purposes you can just run '/usr/lib/qt5/bin/qmlscene main.qml'.
+For installation, see the file 'INSTALL'.

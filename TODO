@@ -1,0 +1,11 @@
+Helsinki Transit Live 0.1
+=========================
+
+ * Initialize center position from GPS
+ * Show the current position with a marker?
+ * Skip downloads and map updates if in background?
+ * Add icon
+ * Add desktop file
+ * Add Makefile?
+ * Write INSTALL
+ * Add RPM-packaging
