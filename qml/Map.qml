@@ -17,7 +17,6 @@
  */
 
 import QtQuick 2.0
-import Sailfish.Silica 1.0
 import QtLocation 5.0
 import QtPositioning 5.0
 
@@ -26,7 +25,7 @@ Map {
     anchors.fill: parent
     center: QtPositioning.coordinate(60.169, 24.941)
     gesture.enabled: true
-    plugin: MapPlugin { }
+    plugin: MapPlugin {}
 
     Component.onCompleted: map.zoomLevel = 15;
 

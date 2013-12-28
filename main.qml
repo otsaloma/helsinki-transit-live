@@ -33,4 +33,11 @@ ApplicationWindow {
     Python {
         id: py
     }
+    onApplicationActiveChanged: {
+        if (applicationActive) {
+            py.call("main.app.start", [], null);
+        } else {
+            py.call("main.app.stop", [], null);
+        }
+    }
 }

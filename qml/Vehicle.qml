@@ -21,6 +21,5 @@ import QtLocation 5.0
 
 MapQuickItem {
     property string vehicleId
-    sourceItem: Image {
-    }
+    sourceItem: Image {}
 }

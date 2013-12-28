@@ -129,9 +129,32 @@ class Application:
         """Initialize an :class:`Application` instance."""
         self.bbox = BBox(0,0,0,0)
         self.interval = interval
+        self.thread_queue = []
         self.vehicles = {}
 
-    def main(self):
+    def set_bbox(self, xmin, xmax, ymin, ymax):
+        """Set coordinates of the bounding box."""
+        self.bbox.xmin = xmin
+        self.bbox.xmax = xmax
+        self.bbox.ymin = ymin
+        self.bbox.ymax = ymax
+
+    def start(self):
+        """Start threaded infinite periodic updates."""
+        # Queue a new update thread, but delay start until
+        # previous start and stop events have been processed.
+        thread = threading.Thread(target=self.update)
+        self.thread_queue.append(thread)
+        while (self.thread_queue and
+               self.thread_queue[0] is not thread):
+            time.sleep(self.interval/2)
+        thread.start()
+
+    def stop(self):
+        """Stop threaded infinite periodic updates."""
+        self.thread_queue.append(None)
+
+    def update(self):
         """Start infinite periodic updates."""
         while True:
             pyotherside.send("query-bbox")
@@ -140,13 +163,14 @@ class Application:
                 self.update_locations()
             self.update_map()
             time.sleep(self.interval/2)
-
-    def set_bbox(self, xmin, xmax, ymin, ymax):
-        """Set coordinates of the bounding box."""
-        self.bbox.xmin = xmin
-        self.bbox.xmax = xmax
-        self.bbox.ymin = ymin
-        self.bbox.ymax = ymax
+            if len(self.thread_queue) > 1:
+                # Quit this thread if later start and/or
+                # stop events have been queued.
+                self.thread_queue.pop(0)
+                while (self.thread_queue and
+                       self.thread_queue[0] is None):
+                    self.thread_queue.pop(0)
+                break
 
     def update_locations(self):
         """Download and update locations of vehicles."""
@@ -217,5 +241,3 @@ class Application:
 
 
 app = Application(interval=3)
-thread = threading.Thread(target=app.main)
-thread.start()
