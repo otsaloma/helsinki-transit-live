@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Helsinki Transit Live
+Exec=/usr/lib/qt5/bin/qmlscene /usr/share/helsinki-transit-live/main.qml
+Icon=helsinki-transit-live
+Type=Application
+X-Nemo-Application-Type=silica-qt5
