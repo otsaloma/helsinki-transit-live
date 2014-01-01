@@ -2,7 +2,7 @@
 %define __os_install_post %{___build_post}
 
 Name: harbour-helsinki-transit-live
-Version: 0.0
+Version: 0.0.1
 Release: 1
 Summary: Real-time locations of HSL public transportation vehicles
 License: GPLv3+
@@ -30,7 +30,6 @@ make DESTDIR=%{buildroot} PREFIX=/usr install
 
 %files
 %doc AUTHORS COPYING NEWS README TODO
-%{_bindir}/%{name}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png

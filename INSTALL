@@ -10,7 +10,6 @@ Uninstallation
 
 To uninstall, remove files and directories
 
-    .../bin/harbour-helsinki-transit-live
     .../share/applications/harbour-helsinki-transit-live.desktop
     .../share/harbour-helsinki-transit-live
     .../share/icons/hicolor/86x86/apps/harbour-helsinki-transit-live.png

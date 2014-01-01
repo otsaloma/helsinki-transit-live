@@ -9,6 +9,7 @@ Releasing a New Version
    $ make dist
    $ make rpm
  * Install RPM and check that it works
+   $ sudo pkcon install-local rpm/*.noarch.rpm
  * Commit changes
    $ git commit -a -m "RELEASE X.Y.Z"
    $ git tag -s helsinki-transit-live-X.Y.Z

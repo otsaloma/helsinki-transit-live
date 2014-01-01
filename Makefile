@@ -1,11 +1,9 @@
 # -*- coding: us-ascii-unix -*-
 
 name       = harbour-helsinki-transit-live
-version    = 0.0
-manifest   = `cat MANIFEST`
+version    = 0.0.1
 DESTDIR    =
 PREFIX     = /usr/local
-bindir     = $(DESTDIR)$(PREFIX)/bin
 datadir    = $(DESTDIR)$(PREFIX)/share/$(name)
 desktopdir = $(DESTDIR)$(PREFIX)/share/applications
 icondir    = $(DESTDIR)$(PREFIX)/share/icons/hicolor/86x86/apps
@@ -19,13 +17,10 @@ clean:
 dist:
 	$(MAKE) clean
 	mkdir -p dist/$(name)-$(version)
-	cp -r $(manifest) dist/$(name)-$(version)
-	tar -C dist -cvJf dist/$(name)-$(version).tar.xz $(name)-$(version)
+	cp -r `cat MANIFEST` dist/$(name)-$(version)
+	tar -C dist -cJf dist/$(name)-$(version).tar.xz $(name)-$(version)
 
 install:
-	@echo "Installing scripts..."
-	mkdir -p $(bindir)
-	cp bin/helsinki-transit-live $(bindir)/$(name)
 	@echo "Installing Python files..."
 	mkdir -p $(datadir)
 	cp *.py $(datadir)
@@ -35,7 +30,7 @@ install:
 	cp qml/[ABCDEFGHIJKLMNOPQRSTUVXYZ]*.qml $(datadir)/qml
 	@echo "Installing desktop file..."
 	mkdir -p $(desktopdir)
-	cp data/helsinki-transit-live.desktop $(desktopdir)/$(name).desktop
+	cp data/$(name).desktop $(desktopdir)
 	@echo "Installing icon..."
 	mkdir -p $(icondir)
 	cp data/helsinki-transit-live.png $(icondir)/$(name).png

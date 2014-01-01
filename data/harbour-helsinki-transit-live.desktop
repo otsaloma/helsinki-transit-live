@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Helsinki Transit Live
-Exec=helsinki-transit-live
-Icon=helsinki-transit-live
+Exec=sailfish-qml harbour-helsinki-transit-live
+Icon=harbour-helsinki-transit-live
 Type=Application
 X-Nemo-Application-Type=silica-qt5

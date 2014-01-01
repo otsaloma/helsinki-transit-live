@@ -22,7 +22,7 @@ import io.thp.pyotherside 1.0
 Python {
     id: py
     Component.onCompleted: {
-        addImportPath(".");
+        addImportPath(Qt.resolvedUrl("..").substr("file://".length));
         importModule("main", null);
         py.setHandler("add-vehicle",    map.addVehicle);
         py.setHandler("query-bbox",     map.queryBBox);
