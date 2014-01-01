@@ -1,0 +1,4 @@
+#!/bin/sh
+APPNAME=$(basename "$0")
+cd /usr/share/$APPNAME
+sailfish-qml $APPNAME

@@ -1,8 +1,10 @@
 Helsinki Transit Live 0.1
 =========================
 
+ --
+
+Helsinki Transit Live 0.2
+=========================
+
  * Initialize center position from GPS
  * Show the current position with a marker?
- * Add Makefile?
- * Write INSTALL
- * Add RPM-packaging

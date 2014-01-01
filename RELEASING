@@ -1,0 +1,20 @@
+Releasing a New Version
+=======================
+
+ * Bump version numbers
+   - Makefile
+   - rpm/*.spec
+ * Update NEWS and TODO
+ * Build tarball and RPM
+   $ make dist
+   $ make rpm
+ * Install RPM and check that it works
+ * Commit changes
+   $ git commit -a -m "RELEASE X.Y.Z"
+   $ git tag -s helsinki-transit-live-X.Y.Z
+   $ git push
+   $ git push --tags
+ * Build final tarball and RPM
+   $ make dist
+   $ make rpm
+ * Upload and announce

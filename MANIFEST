@@ -1,0 +1,14 @@
+bin
+data
+qml
+rpm
+AUTHORS
+COPYING
+INSTALL
+main.py
+Makefile
+MANIFEST
+NEWS
+README
+RELEASING
+TODO

@@ -24,8 +24,8 @@ Python {
     Component.onCompleted: {
         addImportPath(".");
         importModule("main", null);
-        py.setHandler(   "add-vehicle", map.addVehicle);
-        py.setHandler(    "query-bbox", map.queryBBox);
+        py.setHandler("add-vehicle",    map.addVehicle);
+        py.setHandler("query-bbox",     map.queryBBox);
         py.setHandler("remove-vehicle", map.removeVehicle);
         py.setHandler("update-vehicle", map.updateVehicle);
     }
