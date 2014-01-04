@@ -35,7 +35,7 @@ except ImportError:
     print("PyOtherSide not found, continuing anyway!")
     class pyotherside:
         def send(*args):
-            print("send: {}".format(repr(args)))
+            pass
 
 states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
 
@@ -71,6 +71,7 @@ class Vehicle:
         self.type = type
         self.id = None
         self.route = None
+        self.line = None
         self.x = 0
         self.y = 0
         self.bearing = 0
@@ -79,6 +80,21 @@ class Vehicle:
         self.route_icon = None
         for name, value in kwargs.items():
             setattr(self, name, value)
+
+    def guess_line(self):
+        """Guess transit line by parsing `route`."""
+        # It seems that tram routes are possibly abbreviated 4-7 letter
+        # variants of JORE-codes documented as part of the Reittiopas API.
+        # Train, metro and kutsuplus routes are the same as lines.
+        # http://developer.reittiopas.fi/pages/en/http-get-interface-version-2.php
+        line = self.route
+        if len(line) >= 4:
+            line = line[1:5].strip()
+            while line.startswith("0"):
+                line = line[1:]
+        if not line:
+            line = None
+        return(line)
 
     def guess_type(self):
         """Guess vehicle type based on `id`."""
@@ -199,6 +215,7 @@ class Application:
                 # A new vehicle has entered the bounding box.
                 self.vehicles[id] = Vehicle(id=id, route=route)
                 vehicle = self.vehicles[id]
+                vehicle.line = vehicle.guess_line()
                 vehicle.type = vehicle.guess_type()
                 vehicle.state = states.ADD
             vehicle.x = x

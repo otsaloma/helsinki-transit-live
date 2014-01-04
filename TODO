@@ -1,7 +1,12 @@
 Helsinki Transit Live 0.2
 =========================
 
+ [ ] Update route icon of vehicle switches route
+ [ ] Use local copies of icons
+ [ ] Use text labels instead of icons for route names
+
+Helsinki Transit Live 0.3
+=========================
+
  * Initialize center position from GPS
  * Show the current position with a marker?
- * Use local copies of icons and text labels to mark routes
-   - Need to parse route IDs to human readable form
