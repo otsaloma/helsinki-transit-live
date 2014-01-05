@@ -1,3 +1,12 @@
+Helsinki Transit Live 0.2
+=========================
+
+ * Ship simple icons instead using ones from the web interface
+ * Use text labels instead of icons for route names (this should
+   fix missing route names for some newer lines)
+ * Keep updating route label in case vehicle changes its route
+ * Use labels "M" and "V" for metro instead of "1" and "2"
+
 Helsinki Transit Live 0.1
 =========================
 
