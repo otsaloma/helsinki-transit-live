@@ -3,7 +3,7 @@ Helsinki Transit Live
 
 Helsinki Transit Live shows real-time locations of Helsinki Region
 Transport (HSL) public transportation vehicles. It uses the HSL Live
-API [1] and icons from the official web interface [2].
+API [1] and should display data matching the official web interface [2].
 
  [1] http://developer.reittiopas.fi/pages/en/other-apis.php
  [2] http://transport.wspgroup.fi/hklkartta/

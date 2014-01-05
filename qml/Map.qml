@@ -1,6 +1,6 @@
 /* -*- coding: utf-8-unix -*-
  *
- * Copyright (C) 2013 Osmo Salomaa
+ * Copyright (C) 2013-2014 Osmo Salomaa
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,26 +29,19 @@ Map {
 
     Component.onCompleted: map.zoomLevel = 15;
 
-    // Add type and route markers to the map for a new vehicle.
-    function addVehicle(id, x, y, typeIcon, routeIcon) {
-        var item = createVehicle(id, x, y, typeIcon, 55, 55)
-        map.addMapItem(item);
-        if (routeIcon) {
-            item = createVehicle(id, x, y, routeIcon, 55, 67)
-            map.addMapItem(item);
-        }
-    }
-
-    // Create a new QML MapQuickItem as a child of map.
-    function createVehicle(id, x, y, icon, width, height) {
+    // Add a marker to the map for a new vehicle.
+    function addVehicle(id, x, y, bearing, type, line, color) {
         var component = Qt.createComponent("Vehicle.qml");
         var item = component.createObject(map);
-        item.anchorPoint.x = width/2;
-        item.anchorPoint.y = height/2;
-        item.coordinate = QtPositioning.coordinate(y, x);
-        item.sourceItem.source = icon;
         item.vehicleId = id;
-        return item;
+        item.coordinate = QtPositioning.coordinate(y, x);
+        item.bearing = bearing;
+        item.type = type;
+        item.line = line;
+        item.color = color;
+        item.anchorPoint.x = item.width/2;
+        item.anchorPoint.y = item.height/2;
+        map.addMapItem(item);
     }
 
     // Send coordinates of the visible area to the Python backend.
@@ -68,12 +61,14 @@ Map {
         }
     }
 
-    // Update the location markers of vehicle that match id.
-    function updateVehicle(id, x, y) {
+    // Update location markers of vehicles that match id.
+    function updateVehicle(id, x, y, bearing, line) {
         for (var i = 0; i < map.mapItems.length; i++) {
             if (map.mapItems[i].vehicleId == id) {
                 map.mapItems[i].coordinate.longitude = x;
                 map.mapItems[i].coordinate.latitude = y;
+                map.mapItems[i].bearing = bearing;
+                map.mapItems[i].line = line;
             }
         }
     }

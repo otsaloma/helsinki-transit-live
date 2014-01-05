@@ -1,6 +1,6 @@
 # -*- coding: utf-8-unix -*-
 
-# Copyright (C) 2013 Osmo Salomaa
+# Copyright (C) 2013-2014 Osmo Salomaa
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ http://transport.wspgroup.fi/hklkartta/
 
 import collections
 import threading
-import re
 import time
 import urllib.request
 
@@ -56,11 +55,6 @@ class BBox:
         """Area of the bounding box."""
         return (self.xmax - self.xmin) * (self.ymax - self.ymin)
 
-    def __str__(self):
-        """Return a string representation of `self`."""
-        return ("BBox(xmin={:.3f}, xmax={:.3f}, ymin={:.3f}, ymax={:.3f})"
-                .format(self.xmin, self.xmax, self.ymin, self.ymax))
-
 
 class Vehicle:
 
@@ -68,21 +62,31 @@ class Vehicle:
 
     def __init__(self, **kwargs):
         """Initialize a :class:`Vehicle` instance."""
-        self.type = type
         self.id = None
         self.route = None
-        self.line = None
         self.x = 0
         self.y = 0
         self.bearing = 0
         self.state = states.OK
-        self.type_icon = None
-        self.route_icon = None
         for name, value in kwargs.items():
             setattr(self, name, value)
 
-    def guess_line(self):
-        """Guess transit line by parsing `route`."""
+    @property
+    def color(self):
+        """Return `type`-dependent color for icons and text."""
+        if self.type == "train":
+            return "#DA1551"
+        if self.type == "metro":
+            return "#F27826"
+        if self.type == "tram":
+            return "#1BA865"
+        if self.type == "kutsuplus":
+            return "#0B79C7"
+        return "#0C5D9E"
+
+    @property
+    def line(self):
+        """Return human readable line number by parsing `route`."""
         # It seems that tram routes are possibly abbreviated 4-7 letter
         # variants of JORE-codes documented as part of the Reittiopas API.
         # Train, metro and kutsuplus routes are the same as lines.
@@ -94,10 +98,17 @@ class Vehicle:
                 line = line[1:]
         if not line:
             line = None
+        # For metro, "M" and "V" make more sense than "1" and "2".
+        if self.type == "metro":
+            if line == "1":
+                line = "M"
+            if line == "2":
+                line = "V"
         return(line)
 
-    def guess_type(self):
-        """Guess vehicle type based on `id`."""
+    @property
+    def type(self):
+        """Return vehicle type guessed from `id`."""
         if self.id.startswith("RHKL"):
             return "tram"
         if self.id.startswith("metro"):
@@ -105,36 +116,8 @@ class Vehicle:
         if self.id.startswith("H"):
             return "train"
         if self.id.startswith("K"):
-            return "kutsu"
+            return "kutsuplus"
         return "bus"
-
-    def set_icons(self):
-        """Set URLs of type and route icons."""
-        # Let's borrow icons from the official web interface.
-        # http://transport.wspgroup.fi/hklkartta/
-        bearing = round(self.bearing/45)*45
-        if bearing > 315:
-            bearing = 0
-        self.type_icon = (
-            "http://transport.wspgroup.fi/hklkartta/"
-            "images/vehicles/{}{:.0f}.png"
-            .format(self.type, bearing))
-        if not self.route in ("", "0"):
-            route = self.route
-            route = re.sub(r" .*$", r"", route)
-            route = re.sub(r"^([12])$", r"\1m", route)
-            route = re.sub(r"(?<=[A-JL-Z])\d+$", r"", route)
-            self.route_icon = (
-                "http://transport.wspgroup.fi/hklkartta/"
-                "images/vehicles/{}.png"
-                .format(route))
-
-    def __str__(self):
-        """Return a string representation of `self`."""
-        blob = "{} {} on {}:\n".format(self.type, self.id, self.route)
-        for name in ("x", "y", "bearing", "state", "type_icon", "route_icon"):
-            blob += " {}: {}\n".format(name, repr(getattr(self, name)))
-        return(blob)
 
 
 class Application:
@@ -215,13 +198,10 @@ class Application:
                 # A new vehicle has entered the bounding box.
                 self.vehicles[id] = Vehicle(id=id, route=route)
                 vehicle = self.vehicles[id]
-                vehicle.line = vehicle.guess_line()
-                vehicle.type = vehicle.guess_type()
                 vehicle.state = states.ADD
             vehicle.x = x
             vehicle.y = y
             vehicle.bearing = bearing
-            vehicle.set_icons()
 
     def update_map(self):
         """Update vehicle markers."""
@@ -231,15 +211,19 @@ class Application:
                                  vehicle.id,
                                  vehicle.x,
                                  vehicle.y,
-                                 vehicle.type_icon,
-                                 vehicle.route_icon)
+                                 vehicle.bearing,
+                                 vehicle.type,
+                                 vehicle.line,
+                                 vehicle.color)
 
                 vehicle.state = states.OK
             if vehicle.state == states.UPDATE:
                 pyotherside.send("update-vehicle",
                                  vehicle.id,
                                  vehicle.x,
-                                 vehicle.y)
+                                 vehicle.y,
+                                 vehicle.bearing,
+                                 vehicle.line)
 
                 vehicle.state = states.OK
             if vehicle.state == states.REMOVE:

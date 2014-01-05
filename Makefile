@@ -25,9 +25,10 @@ install:
 	mkdir -p $(datadir)
 	cp *.py $(datadir)
 	@echo "Installing QML files..."
-	mkdir -p $(datadir)/qml
+	mkdir -p $(datadir)/qml/icons
 	cp qml/helsinki-transit-live.qml $(datadir)/qml/$(name).qml
 	cp qml/[ABCDEFGHIJKLMNOPQRSTUVXYZ]*.qml $(datadir)/qml
+	cp qml/icons/*.png $(datadir)/qml/icons
 	@echo "Installing desktop file..."
 	mkdir -p $(desktopdir)
 	cp data/$(name).desktop $(desktopdir)
