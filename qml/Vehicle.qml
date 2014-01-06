@@ -21,6 +21,8 @@ import QtLocation 5.0
 
 MapQuickItem {
     id: item
+    height: image.height
+    width: image.width
     property double bearing: 0
     property string color: "#0C5D9E"
     property string line: ""
@@ -29,22 +31,22 @@ MapQuickItem {
     sourceItem: Item {
         Image {
             id: image
-            anchors.horizontalCenter: text.horizontalCenter
-            anchors.verticalCenter: text.verticalCenter
             rotation: item.bearing
             source: "icons/" + item.type + ".png"
             transformOrigin: Item.Center
         }
         Rectangle {
             id: rectangle
-            anchors.horizontalCenter: text.horizontalCenter
-            anchors.verticalCenter: text.verticalCenter
+            anchors.horizontalCenter: image.horizontalCenter
+            anchors.verticalCenter: image.verticalCenter
             color: item.color
             height: text.height
             width: text.width
         }
         Text {
             id: text
+            anchors.horizontalCenter: image.horizontalCenter
+            anchors.verticalCenter: image.verticalCenter
             color: "white"
             font.bold: true
             font.family: "sans"
