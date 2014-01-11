@@ -5,6 +5,7 @@ AUTHORS
 COPYING
 INSTALL
 main.py
+test.py
 Makefile
 MANIFEST
 NEWS

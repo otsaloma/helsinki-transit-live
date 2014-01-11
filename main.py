@@ -99,7 +99,7 @@ class Vehicle:
         if not line:
             line = None
         # For metro, "M" and "V" make more sense than "1" and "2".
-        if self.type == "metro":
+        if self.id.startswith("metro"):
             if line == "1":
                 line = "M"
             if line == "2":
@@ -108,15 +108,23 @@ class Vehicle:
 
     @property
     def type(self):
-        """Return vehicle type guessed from `id`."""
-        if self.id.startswith("RHKL"):
-            return "tram"
-        if self.id.startswith("metro"):
-            return "metro"
-        if self.id.startswith("H"):
+        """Return vehicle type guessed from `line`."""
+        line = self.line
+        if not line:
+            return "bus"
+        if line[0].isdigit():
+            while line[-1].isalpha():
+                line = line[:-1]
+            if line.isdigit():
+                if int(line) <= 10:
+                    return "tram"
+                return "bus"
+        if line[0].isalpha():
+            if line.startswith("K"):
+                return "kutsuplus"
+            if self.id.startswith("metro"):
+                return "metro"
             return "train"
-        if self.id.startswith("K"):
-            return "kutsuplus"
         return "bus"
 
 
