@@ -207,6 +207,7 @@ class Application:
                 self.vehicles[id] = Vehicle(id=id, route=route)
                 vehicle = self.vehicles[id]
                 vehicle.state = states.ADD
+            vehicle.route = route
             vehicle.x = x
             vehicle.y = y
             vehicle.bearing = bearing
