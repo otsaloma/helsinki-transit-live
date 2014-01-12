@@ -112,7 +112,7 @@ class Vehicle:
     def type(self):
         """Return vehicle type guessed from `line`."""
         line = self.line
-        if not line:
+        if not line or line == "0":
             return "unknown"
         if line[0].isdigit():
             while line[-1].isalpha():
@@ -122,9 +122,10 @@ class Vehicle:
                     return "tram"
                 return "bus"
         if line[0].isalpha():
-            if line.startswith("K"):
+            if line.startswith("K") and line[-1].isdigit():
                 return "kutsuplus"
-            if self.id.startswith("metro"):
+            if (self.id.startswith("metro") or
+                self.route.isdigit()):
                 return "metro"
             return "train"
         return "unknown"
