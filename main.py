@@ -82,7 +82,9 @@ class Vehicle:
             return "#1BA865"
         if self.type == "kutsuplus":
             return "#0B79C7"
-        return "#0C5D9E"
+        if self.type == "bus":
+            return "#0C5D9E"
+        return "#000000"
 
     @property
     def line(self):
@@ -111,7 +113,7 @@ class Vehicle:
         """Return vehicle type guessed from `line`."""
         line = self.line
         if not line:
-            return "bus"
+            return "unknown"
         if line[0].isdigit():
             while line[-1].isalpha():
                 line = line[:-1]
@@ -125,7 +127,7 @@ class Vehicle:
             if self.id.startswith("metro"):
                 return "metro"
             return "train"
-        return "bus"
+        return "unknown"
 
 
 class Application:
