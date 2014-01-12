@@ -24,9 +24,9 @@ MapQuickItem {
     height: image.height
     width: image.width
     property double bearing: 0
-    property string color: "#0C5D9E"
+    property string color: "#000000"
     property string line: ""
-    property string type: "bus"
+    property string type: "unknown"
     property string vehicleId
     sourceItem: Item {
         Image {
