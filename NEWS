@@ -1,3 +1,10 @@
+Helsinki Transit Live 0.2.2
+===========================
+
+ * Fix guessing vehicle type
+ * Use black color for vehicles of unrecognized type
+ * Fix updating route label
+
 Helsinki Transit Live 0.2.1
 ===========================
 
