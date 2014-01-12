@@ -77,13 +77,13 @@ class Vehicle:
         if self.type == "train":
             return "#DA1551"
         if self.type == "metro":
-            return "#F27826"
+            return "#FE631E"
         if self.type == "tram":
-            return "#1BA865"
-        if self.type == "kutsuplus":
-            return "#0B79C7"
+            return "#169660"
         if self.type == "bus":
-            return "#0C5D9E"
+            return "#0A79C7"
+        if self.type == "kutsuplus":
+            return "#0A79C7"
         return "#000000"
 
     @property
