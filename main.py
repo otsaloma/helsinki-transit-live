@@ -98,8 +98,6 @@ class Vehicle:
             line = line[1:5].strip()
             while line.startswith("0"):
                 line = line[1:]
-        if not line:
-            line = None
         # For metro, "M" and "V" make more sense than "1" and "2".
         if self.id.startswith("metro"):
             if line == "1":
