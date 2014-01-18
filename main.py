@@ -96,7 +96,7 @@ class Vehicle:
         line = self.route
         if len(line) >= 4:
             line = line[1:5].strip()
-            while line.startswith("0"):
+            while len(line) > 1 and line.startswith("0"):
                 line = line[1:]
         # For metro, "M" and "V" make more sense than "1" and "2".
         if self.id.startswith("metro"):
@@ -108,7 +108,11 @@ class Vehicle:
 
     @property
     def type(self):
-        """Return vehicle type guessed from `line`."""
+        """Return vehicle type guessed from `id` and `line`."""
+        if self.id.startswith("metro"):
+            return "metro"
+        if self.id.startswith("RHKL"):
+            return "tram"
         line = self.line
         if not line or line == "0":
             return "unknown"
@@ -122,8 +126,7 @@ class Vehicle:
         if line[0].isalpha():
             if line.startswith("K") and line[-1].isdigit():
                 return "kutsuplus"
-            if (self.id.startswith("metro") or
-                self.route.isdigit()):
+            if self.route.isdigit():
                 return "metro"
             return "train"
         return "unknown"
