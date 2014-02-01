@@ -24,10 +24,19 @@ Map {
     id: map
     anchors.fill: parent
     center: QtPositioning.coordinate(60.169, 24.941)
+    focus: true
     gesture.enabled: true
     plugin: MapPlugin {}
 
     Component.onCompleted: map.zoomLevel = 15;
+
+    // Allow zooming with plus and minus keys on the emulator.
+    Keys.onPressed: {
+        if (event.key == Qt.Key_Plus)
+            map.zoomLevel++;
+        if (event.key == Qt.Key_Minus)
+            map.zoomLevel--;
+    }
 
     // Add a marker to the map for a new vehicle.
     function addVehicle(id, x, y, bearing, type, line, color) {
