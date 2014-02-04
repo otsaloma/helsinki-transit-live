@@ -44,7 +44,7 @@ class BBox:
     """Coordinates of a rectangular area."""
 
     def __init__(self, xmin=0, xmax=0, ymin=0, ymax=0):
-        """Initialize a :class:`BBox` instance."""
+        """Initialize a :class:`BBox` object."""
         self.xmin = xmin
         self.xmax = xmax
         self.ymin = ymin
@@ -61,7 +61,7 @@ class Vehicle:
     """Properties of a public transportation vehicle."""
 
     def __init__(self, **kwargs):
-        """Initialize a :class:`Vehicle` instance."""
+        """Initialize a :class:`Vehicle` object."""
         self.id = None
         self.route = None
         self.x = 0
@@ -137,7 +137,7 @@ class Application:
     """Show real-time locations of HSL public transportation vehicles."""
 
     def __init__(self, interval):
-        """Initialize an :class:`Application` instance."""
+        """Initialize an :class:`Application` object."""
         self.bbox = BBox(0,0,0,0)
         self.interval = interval
         self.thread_queue = []
@@ -168,7 +168,7 @@ class Application:
     def update(self):
         """Start infinite periodic updates."""
         while True:
-            pyotherside.send("query-bbox")
+            pyotherside.send("send-bbox")
             time.sleep(self.interval/2)
             if self.bbox.area > 0:
                 self.update_locations()

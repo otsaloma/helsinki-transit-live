@@ -24,9 +24,9 @@ Python {
     Component.onCompleted: {
         addImportPath(Qt.resolvedUrl("..").substr("file://".length));
         importModule("main", null);
-        py.setHandler("add-vehicle",    map.addVehicle);
-        py.setHandler("query-bbox",     map.queryBBox);
+        py.setHandler("add-vehicle", map.addVehicle);
         py.setHandler("remove-vehicle", map.removeVehicle);
+        py.setHandler("send-bbox", map.sendBBox);
         py.setHandler("update-vehicle", map.updateVehicle);
     }
     onError: console.log("PYTHON ERROR: " + traceback);

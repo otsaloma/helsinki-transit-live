@@ -19,6 +19,7 @@
 import QtQuick 2.0
 import QtLocation 5.0
 import QtPositioning 5.0
+import "."
 
 Map {
     id: map
@@ -53,21 +54,21 @@ Map {
         map.addMapItem(item);
     }
 
-    // Send coordinates of the visible area to the Python backend.
-    function queryBBox() {
-        if (map.width <= 0 || map.height <= 0) return;
-        var nw = map.toCoordinate(Qt.point(0, 0));
-        var se = map.toCoordinate(Qt.point(map.width, map.height));
-        var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
-        py.call("main.app.set_bbox", bbox, null);
-    }
-
     // Remove vehicle markers that match id.
     function removeVehicle(id) {
         for (var i = map.mapItems.length-1; i >= 0; i--) {
             if (map.mapItems[i].vehicleId == id)
                 map.removeMapItem(map.mapItems[i]);
         }
+    }
+
+    // Send coordinates of the visible area to the Python backend.
+    function sendBBox() {
+        if (map.width <= 0 || map.height <= 0) return;
+        var nw = map.toCoordinate(Qt.point(0, 0));
+        var se = map.toCoordinate(Qt.point(map.width, map.height));
+        var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
+        py.call("main.app.set_bbox", bbox, null);
     }
 
     // Update location markers of vehicles that match id.
