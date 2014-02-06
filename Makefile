@@ -37,7 +37,6 @@ install:
 	cp data/helsinki-transit-live.png $(icondir)/$(name).png
 
 rpm:
-	$(MAKE) dist
 	mkdir -p $$HOME/rpmbuild/SOURCES
 	cp dist/$(name)-$(version).tar.xz $$HOME/rpmbuild/SOURCES
 	rpmbuild -ba rpm/$(name).spec
