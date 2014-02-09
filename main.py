@@ -22,6 +22,8 @@ http://developer.reittiopas.fi/pages/en/other-apis.php
 http://transport.wspgroup.fi/hklkartta/
 """
 
+__version__ = "0.2.4"
+
 import collections
 import threading
 import time
@@ -140,8 +142,16 @@ class Application:
         """Initialize an :class:`Application` object."""
         self.bbox = BBox(0,0,0,0)
         self.interval = interval
+        self.opener = None
         self.thread_queue = []
         self.vehicles = {}
+        self._init_url_opener()
+
+    def _init_url_opener(self):
+        """Initialize the URL opener to use for downloading data."""
+        self.opener = urllib.request.build_opener()
+        agent = "helsinki-transit-live/{}".format(__version__)
+        self.opener.addheaders = [("User-agent", agent)]
 
     def set_bbox(self, xmin, xmax, ymin, ymax):
         """Set coordinates of the bounding box."""
@@ -186,7 +196,7 @@ class Application:
     def update_locations(self):
         """Download and update locations of vehicles."""
         try:
-            f = urllib.request.urlopen(self.url, timeout=self.interval)
+            f = self.opener.open(self.url, timeout=10)
             text = f.read(102400).decode("ascii", errors="ignore")
             f.close()
         except Exception as error:

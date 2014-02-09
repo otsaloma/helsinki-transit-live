@@ -2,6 +2,7 @@ Releasing a New Version
 =======================
 
  * Bump version numbers
+   - main.py
    - Makefile
    - rpm/*.spec
  * Update NEWS and TODO
