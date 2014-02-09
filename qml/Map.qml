@@ -33,10 +33,8 @@ Map {
 
     // Allow zooming with plus and minus keys on the emulator.
     Keys.onPressed: {
-        if (event.key == Qt.Key_Plus)
-            map.zoomLevel++;
-        if (event.key == Qt.Key_Minus)
-            map.zoomLevel--;
+        (event.key == Qt.Key_Plus) && map.zoomLevel++;
+        (event.key == Qt.Key_Minus) && map.zoomLevel--;
     }
 
     // Add a marker to the map for a new vehicle.
