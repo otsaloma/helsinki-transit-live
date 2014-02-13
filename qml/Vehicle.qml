@@ -31,6 +31,7 @@ MapQuickItem {
     sourceItem: Item {
         Image {
             id: image
+            asynchronous: true
             rotation: item.bearing
             source: "icons/" + item.type + ".png"
             transformOrigin: Item.Center
