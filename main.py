@@ -115,7 +115,7 @@ class Vehicle:
             return "metro"
         if self.id.startswith("RHKL"):
             return "tram"
-        line = self.line
+        line = self.line.upper()
         if not line or line == "0":
             return "unknown"
         if line[0].isdigit():
