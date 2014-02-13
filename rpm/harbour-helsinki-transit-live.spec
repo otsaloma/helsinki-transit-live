@@ -9,7 +9,8 @@ License: GPLv3+
 URL: https://github.com/otsaloma/helsinki-transit-live
 Source: %{name}-%{version}.tar.xz
 BuildArch: noarch
-BuildRequires: make
+# Comment out to allow building on Debian.
+# BuildRequires: make
 Requires: libsailfishapp-launcher
 Requires: pyotherside-qml-plugin-python3-qt5
 Requires: python3-base
