@@ -15,14 +15,13 @@ Requires: libsailfishapp-launcher
 Requires: pyotherside-qml-plugin-python3-qt5
 Requires: python3-base
 Requires: qt5-plugin-geoservices-nokia
-Requires: qt5-plugin-geoservices-osm
 Requires: qt5-qtdeclarative-import-location
 Requires: qt5-qtdeclarative-import-positioning
 Requires: sailfishsilica-qt5
 
 %description
-Helsinki Transit Live shows real-time locations of Helsinki Region
-Transport (HSL) public transportation vehicles.
+Real-time locations of Helsinki Region Transport (HSL) public transportation
+vehicles.
 
 %prep
 %setup -q

@@ -20,10 +20,9 @@ import QtQuick 2.0
 import QtLocation 5.0
 
 Plugin {
+    name: "nokia"
     parameters: [
         PluginParameter { name: "app_id"; value: "G5C3eRRAvT3rvQh3W7tD"; },
         PluginParameter { name: "token"; value: "hEJiHLDbk83Izl56xaMxIw"; }
     ]
-    preferred: ["nokia", "osm"]
-    required.mapping: Plugin.OnlineMappingFeature
 }

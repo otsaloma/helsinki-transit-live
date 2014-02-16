@@ -20,7 +20,6 @@ To run Helsinki Transit Live on a Sailfish system, you need
  * qt5-qtdeclarative-import-location
  * qt5-qtdeclarative-import-positioning
  * qt5-plugin-geoservices-nokia
- * qt5-plugin-geoservices-osm
  * pyotherside-qml-plugin-python3-qt5
 
 For testing purposes you can just run
