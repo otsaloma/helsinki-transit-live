@@ -34,7 +34,7 @@ ApplicationWindow {
         id: py
     }
     onApplicationActiveChanged: {
-        if (py.ready) return;
+        if (!py.ready) return;
         applicationActive ?
             py.call("main.app.start", [], null) :
             py.call("main.app.stop", [], null);
