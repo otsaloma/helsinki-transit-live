@@ -25,6 +25,7 @@ http://transport.wspgroup.fi/hklkartta/
 __version__ = "0.2.4"
 
 import collections
+import sys
 import threading
 import time
 import urllib.request
@@ -200,7 +201,10 @@ class Application:
             text = f.read(102400).decode("ascii", errors="ignore")
             f.close()
         except Exception as error:
-            print("Failed to download data: {}".format(str(error)))
+            print("Failed to download data: {}"
+                  .format(str(error)),
+                  file=sys.stderr)
+
             return
         for id, vehicle in self.vehicles.items():
             vehicle.state = states.REMOVE
@@ -211,7 +215,10 @@ class Application:
                 id, route = items[0:2]
                 x, y, bearing = map(float, items[2:5])
             except Exception:
-                print("Failed to parse line: {}".format(repr(line)))
+                print("Failed to parse line: {}"
+                      .format(repr(line)),
+                      file=sys.stderr)
+
                 continue
             try:
                 vehicle = self.vehicles[id]
@@ -265,3 +272,5 @@ class Application:
 
 
 app = Application(interval=3)
+app.start()
+pyotherside.send("set-ready", True)
