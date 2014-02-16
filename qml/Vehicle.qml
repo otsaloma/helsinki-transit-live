@@ -21,6 +21,8 @@ import QtLocation 5.0
 
 MapQuickItem {
     id: item
+    anchorPoint.x: image.width/2
+    anchorPoint.y: image.height/2
     height: image.height
     width: image.width
     property double bearing: 0

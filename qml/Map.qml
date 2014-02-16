@@ -47,8 +47,6 @@ Map {
         item.type = type;
         item.line = line;
         item.color = color;
-        item.anchorPoint.x = item.width/2;
-        item.anchorPoint.y = item.height/2;
         map.addMapItem(item);
     }
 
