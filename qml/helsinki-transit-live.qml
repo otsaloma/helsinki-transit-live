@@ -1,6 +1,6 @@
 /* -*- coding: utf-8-unix -*-
  *
- * Copyright (C) 2013 Osmo Salomaa
+ * Copyright (C) 2013-2014 Osmo Salomaa
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,10 @@ ApplicationWindow {
         id: py
     }
     onApplicationActiveChanged: {
-        if (applicationActive) {
-            py.call("main.app.start", [], null);
-        } else {
+        if (py.ready) return;
+        applicationActive ?
+            py.call("main.app.start", [], null) :
             py.call("main.app.stop", [], null);
-        }
+
     }
 }

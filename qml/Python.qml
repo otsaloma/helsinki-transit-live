@@ -1,6 +1,6 @@
 /* -*- coding: utf-8-unix -*-
  *
- * Copyright (C) 2013 Osmo Salomaa
+ * Copyright (C) 2013-2014 Osmo Salomaa
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,22 @@ import io.thp.pyotherside 1.0
 
 Python {
     id: py
+    property bool ready: false
+
     Component.onCompleted: {
         addImportPath(Qt.resolvedUrl("..").substr("file://".length));
         importModule("main", null);
         py.setHandler("add-vehicle", map.addVehicle);
         py.setHandler("remove-vehicle", map.removeVehicle);
         py.setHandler("send-bbox", map.sendBBox);
+        py.setHandler("set-ready", py.setReady);
         py.setHandler("update-vehicle", map.updateVehicle);
     }
+
     onError: console.log("PYTHON ERROR: " + traceback);
+
+    // Set state of the Python backend.
+    function setReady(ready) {
+        py.ready = ready;
+    }
 }
