@@ -22,7 +22,7 @@ http://developer.reittiopas.fi/pages/en/other-apis.php
 http://transport.wspgroup.fi/hklkartta/
 """
 
-__version__ = "0.2.4"
+__version__ = "0.3"
 
 import collections
 import sys

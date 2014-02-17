@@ -1,3 +1,12 @@
+Helsinki Transit Live 0.3
+=========================
+
+ * Increase data download timeout to ten seconds
+ * Set user agent for data downloading
+ * Allow plus and minus keys to be used for zooming (this is to ease
+   testing on the emulator and hopefully doesn't break anything in
+   actual device use)
+
 Helsinki Transit Live 0.2.4
 ===========================
 
