@@ -47,7 +47,7 @@ class BBox:
     """Coordinates of a rectangular area."""
 
     def __init__(self, xmin=0, xmax=0, ymin=0, ymax=0):
-        """Initialize a :class:`BBox` object."""
+        """Initialize a :class:`BBox` instance."""
         self.xmin = xmin
         self.xmax = xmax
         self.ymin = ymin
@@ -64,7 +64,7 @@ class Vehicle:
     """Properties of a public transportation vehicle."""
 
     def __init__(self, **kwargs):
-        """Initialize a :class:`Vehicle` object."""
+        """Initialize a :class:`Vehicle` instance."""
         self.id = None
         self.route = None
         self.x = 0
@@ -140,7 +140,7 @@ class Application:
     """Show real-time locations of HSL public transportation vehicles."""
 
     def __init__(self, interval):
-        """Initialize an :class:`Application` object."""
+        """Initialize an :class:`Application` instance."""
         self.bbox = BBox(0,0,0,0)
         self.interval = interval
         self.opener = None
