@@ -4,3 +4,5 @@ Helsinki Transit Live 1.0
  * Initialize center position from GPS
  * Show the current position with a marker?
  * Add separate main.qml for desktop use?
+ * Change name in desktop file since in the launcher grid it gets
+   cut off to "Helsinki Tran..."?
