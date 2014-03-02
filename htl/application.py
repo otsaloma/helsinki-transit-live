@@ -55,6 +55,8 @@ class Application:
 
     def start(self):
         """Start threaded infinite periodic updates."""
+        if (self.thread_queue and
+            self.thread_queue[-1] is not None): return
         # Queue a new update thread, but delay start until
         # previous start and stop events have been processed.
         thread = threading.Thread(target=self.update)
@@ -66,6 +68,8 @@ class Application:
 
     def stop(self):
         """Stop threaded infinite periodic updates."""
+        if (self.thread_queue and
+            self.thread_queue[-1] is None): return
         self.thread_queue.append(None)
 
     def update(self):
@@ -75,7 +79,7 @@ class Application:
             time.sleep(self.interval/2)
             if self.bbox.area > 0:
                 self.update_locations()
-            self.update_map()
+                self.update_map()
             time.sleep(self.interval/2)
             if len(self.thread_queue) > 1:
                 # Quit this thread if later start and/or
