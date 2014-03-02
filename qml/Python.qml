@@ -25,7 +25,11 @@ Python {
 
     Component.onCompleted: {
         addImportPath(Qt.resolvedUrl("..").substr("file://".length));
-        importModule("main", null);
+        importModule("htl", function() {
+            py.call("htl.main", [], function() {
+                py.ready = true;
+            });
+        });
         py.setHandler("add-vehicle", map.addVehicle);
         py.setHandler("remove-vehicle", map.removeVehicle);
         py.setHandler("send-bbox", map.sendBBox);
@@ -33,10 +37,5 @@ Python {
         py.setHandler("update-vehicle", map.updateVehicle);
     }
 
-    onError: console.log("PYTHON ERROR: " + traceback);
-
-    // Set state of the Python backend.
-    function setReady(ready) {
-        py.ready = ready;
-    }
+    onError: console.log("Error: " + traceback);
 }

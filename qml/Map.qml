@@ -64,7 +64,7 @@ Map {
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
         var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
-        py.call("main.app.set_bbox", bbox, null);
+        py.call("htl.app.set_bbox", bbox, null);
     }
 
     // Update location markers of vehicles that match id.

@@ -36,8 +36,8 @@ ApplicationWindow {
     onApplicationActiveChanged: {
         if (!py.ready) return;
         applicationActive ?
-            py.call("main.app.start", [], null) :
-            py.call("main.app.stop", [], null);
+            py.call("htl.app.start", [], null) :
+            py.call("htl.app.stop", [], null);
 
     }
 }

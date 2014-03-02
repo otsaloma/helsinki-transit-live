@@ -1,14 +1,13 @@
 data
+htl
 qml
 rpm
 AUTHORS
 COPYING
 INSTALL
-main.py
 Makefile
 MANIFEST
 NEWS
 README
 RELEASING
-test.py
 TODO

@@ -15,124 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Show real-time locations of HSL public transportation vehicles.
+"""Show real-time locations of HSL public transportation vehicles."""
 
-http://developer.reittiopas.fi/pages/en/other-apis.php
-http://transport.wspgroup.fi/hklkartta/
-"""
-
-__version__ = "0.3"
-
-import collections
+import htl
+import pyotherside
 import sys
 import threading
 import time
 import urllib.request
 
-try:
-    import pyotherside
-except ImportError:
-    # Allow testing Python part alone.
-    print("PyOtherSide not found, continuing anyway!")
-    class pyotherside:
-        def send(*args):
-            pass
-
-states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
-
-
-class BBox:
-
-    """Coordinates of a rectangular area."""
-
-    def __init__(self, xmin=0, xmax=0, ymin=0, ymax=0):
-        """Initialize a :class:`BBox` instance."""
-        self.xmin = xmin
-        self.xmax = xmax
-        self.ymin = ymin
-        self.ymax = ymax
-
-    @property
-    def area(self):
-        """Area of the bounding box."""
-        return (self.xmax - self.xmin) * (self.ymax - self.ymin)
-
-
-class Vehicle:
-
-    """Properties of a public transportation vehicle."""
-
-    def __init__(self, **kwargs):
-        """Initialize a :class:`Vehicle` instance."""
-        self.id = None
-        self.route = None
-        self.x = 0
-        self.y = 0
-        self.bearing = 0
-        self.state = states.OK
-        for name, value in kwargs.items():
-            setattr(self, name, value)
-
-    @property
-    def color(self):
-        """Return `type`-dependent color for icons and text."""
-        if self.type == "train":
-            return "#DA1551"
-        if self.type == "metro":
-            return "#FE631E"
-        if self.type == "tram":
-            return "#169660"
-        if self.type == "bus":
-            return "#0A79C7"
-        if self.type == "kutsuplus":
-            return "#0A79C7"
-        return "#000000"
-
-    @property
-    def line(self):
-        """Return human readable line number by parsing `route`."""
-        # It seems that tram routes are possibly abbreviated 4-7 letter
-        # variants of JORE-codes documented as part of the Reittiopas API.
-        # Train, metro and kutsuplus routes are the same as lines.
-        # http://developer.reittiopas.fi/pages/en/http-get-interface-version-2.php
-        line = self.route
-        if len(line) >= 4:
-            line = line[1:5].strip()
-            while len(line) > 1 and line.startswith("0"):
-                line = line[1:]
-        # For metro, "M" and "V" make more sense than "1" and "2".
-        if self.id.startswith("metro"):
-            if line == "1":
-                line = "M"
-            if line == "2":
-                line = "V"
-        return(line)
-
-    @property
-    def type(self):
-        """Return vehicle type guessed from `id` and `line`."""
-        if self.id.startswith("metro"):
-            return "metro"
-        if self.id.startswith("RHKL"):
-            return "tram"
-        line = self.line.upper()
-        if not line or line == "0":
-            return "unknown"
-        if line[0].isdigit():
-            while line[-1].isalpha():
-                line = line[:-1]
-            if line.isdigit():
-                if int(line) <= 10:
-                    return "tram"
-                return "bus"
-        if line[0].isalpha():
-            if line.startswith("K") and line[-1].isdigit():
-                return "kutsuplus"
-            if self.route.isdigit():
-                return "metro"
-            return "train"
-        return "unknown"
+__all__ = ("Application",)
 
 
 class Application:
@@ -141,7 +33,7 @@ class Application:
 
     def __init__(self, interval):
         """Initialize an :class:`Application` instance."""
-        self.bbox = BBox(0,0,0,0)
+        self.bbox = htl.BBox(0,0,0,0)
         self.interval = interval
         self.opener = None
         self.thread_queue = []
@@ -151,7 +43,7 @@ class Application:
     def _init_url_opener(self):
         """Initialize the URL opener to use for downloading data."""
         self.opener = urllib.request.build_opener()
-        agent = "helsinki-transit-live/{}".format(__version__)
+        agent = "helsinki-transit-live/{}".format(htl.__version__)
         self.opener.addheaders = [("User-agent", agent)]
 
     def set_bbox(self, xmin, xmax, ymin, ymax):
@@ -207,7 +99,7 @@ class Application:
 
             return
         for id, vehicle in self.vehicles.items():
-            vehicle.state = states.REMOVE
+            vehicle.state = htl.states.REMOVE
         for line in text.splitlines():
             items = line.split(";")
             if not items[1:]: continue
@@ -222,12 +114,12 @@ class Application:
                 continue
             try:
                 vehicle = self.vehicles[id]
-                vehicle.state = states.UPDATE
+                vehicle.state = htl.states.UPDATE
             except KeyError:
                 # A new vehicle has entered the bounding box.
-                self.vehicles[id] = Vehicle(id=id, route=route)
+                self.vehicles[id] = htl.Vehicle(id=id, route=route)
                 vehicle = self.vehicles[id]
-                vehicle.state = states.ADD
+                vehicle.state = htl.states.ADD
             vehicle.route = route
             vehicle.x = x
             vehicle.y = y
@@ -236,7 +128,7 @@ class Application:
     def update_map(self):
         """Update vehicle markers."""
         for id, vehicle in list(self.vehicles.items()):
-            if vehicle.state == states.ADD:
+            if vehicle.state == htl.states.ADD:
                 pyotherside.send("add-vehicle",
                                  vehicle.id,
                                  vehicle.x,
@@ -246,8 +138,8 @@ class Application:
                                  vehicle.line,
                                  vehicle.color)
 
-                vehicle.state = states.OK
-            if vehicle.state == states.UPDATE:
+                vehicle.state = htl.states.OK
+            if vehicle.state == htl.states.UPDATE:
                 pyotherside.send("update-vehicle",
                                  vehicle.id,
                                  vehicle.x,
@@ -255,8 +147,8 @@ class Application:
                                  vehicle.bearing,
                                  vehicle.line)
 
-                vehicle.state = states.OK
-            if vehicle.state == states.REMOVE:
+                vehicle.state = htl.states.OK
+            if vehicle.state == htl.states.REMOVE:
                 pyotherside.send("remove-vehicle", vehicle.id)
                 del self.vehicles[id]
 
@@ -269,8 +161,3 @@ class Application:
                         self.bbox.ymin,
                         self.bbox.xmax,
                         self.bbox.ymax))
-
-
-app = Application(interval=3)
-app.start()
-pyotherside.send("set-ready", True)

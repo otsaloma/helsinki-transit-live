@@ -11,7 +11,7 @@ icondir    = $(DESTDIR)$(PREFIX)/share/icons/hicolor/86x86/apps
 .PHONY: clean dist install rpm
 
 clean:
-	rm -rf dist __pycache__
+	rm -rf dist htl/__pycache__
 	rm -f rpm/*.rpm
 
 dist:
@@ -22,8 +22,8 @@ dist:
 
 install:
 	@echo "Installing Python files..."
-	mkdir -p $(datadir)
-	cp main.py $(datadir)
+	mkdir -p $(datadir)/htl
+	cp htl/*.py $(datadir)/htl
 	@echo "Installing QML files..."
 	mkdir -p $(datadir)/qml/icons
 	cp qml/helsinki-transit-live.qml $(datadir)/qml/$(name).qml

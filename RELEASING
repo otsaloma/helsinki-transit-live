@@ -2,7 +2,7 @@ Releasing a New Version
 =======================
 
  * Bump version numbers
-   - main.py
+   - htl/__init__.py
    - Makefile
    - rpm/*.spec
  * Update NEWS and TODO
