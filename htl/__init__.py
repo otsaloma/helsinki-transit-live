@@ -33,7 +33,6 @@ from htl.vehicle import *
 from htl.application import *
 
 def main():
-    import pyotherside
     global app
     app = Application(interval=3)
     app.start()
