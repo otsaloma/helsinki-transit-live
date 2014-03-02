@@ -18,26 +18,27 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import QtLocation 5.0
 import "."
 
 ApplicationWindow {
     allowedOrientations: Orientation.All
+    cover: undefined
     initialPage: Page {
         id: page
         Map {
             id: map
         }
     }
-    cover: null
     Python {
         id: py
     }
+    Component.onCompleted: {
+        py.setHandler("add-vehicle", map.addVehicle);
+        py.setHandler("remove-vehicle", map.removeVehicle);
+        py.setHandler("send-bbox", map.sendBBox);
+        py.setHandler("update-vehicle", map.updateVehicle);
+    }
     onApplicationActiveChanged: {
-        if (!py.ready) return;
-        applicationActive ?
-            py.call("htl.app.start", [], null) :
-            py.call("htl.app.stop", [], null);
-
+        applicationActive ? map.start() : map.stop();
     }
 }

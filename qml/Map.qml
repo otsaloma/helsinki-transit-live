@@ -29,12 +29,30 @@ Map {
     gesture.enabled: true
     plugin: MapPlugin {}
 
-    Component.onCompleted: map.zoomLevel = 15;
+    property var gps: PositionSource {}
+    property var position: map.gps.position
+    property var positionMarker: PositionMarker {}
+    property var vehicles: []
 
-    // Allow zooming with plus and minus keys on the emulator.
+    Component.onCompleted: {
+        map.zoomLevel = 15;
+        gps.start();
+    }
+
     Keys.onPressed: {
+        // Allow zooming with plus and minus keys on the emulator.
         (event.key == Qt.Key_Plus) && map.zoomLevel++;
         (event.key == Qt.Key_Minus) && map.zoomLevel--;
+    }
+
+    onPositionChanged: {
+        // Center map based on a couple initial positioning values.
+        if (Date.now() - gps.initTime < 3500) {
+            map.center = map.position.coordinate;
+        } else if (gps.updateInterval < 4500) {
+            gps.updateInterval = 5000;
+        }
+        positionMarker.coordinate = map.position.coordinate;
     }
 
     // Add a marker to the map for a new vehicle.
@@ -47,14 +65,17 @@ Map {
         item.type = type;
         item.line = line;
         item.color = color;
+        map.vehicles.push(item);
         map.addMapItem(item);
     }
 
     // Remove vehicle markers that match id.
     function removeVehicle(id) {
-        for (var i = map.mapItems.length-1; i >= 0; i--) {
-            if (map.mapItems[i].vehicleId == id)
-                map.removeMapItem(map.mapItems[i]);
+        for (var i = map.vehicles.length-1; i >= 0; i--) {
+            if (map.vehicles[i].vehicleId == id) {
+                map.removeMapItem(map.vehicles[i]);
+                map.vehicles.splice(i, 1);
+            }
         }
     }
 
@@ -67,14 +88,28 @@ Map {
         py.call("htl.app.set_bbox", bbox, null);
     }
 
+    // Start periodic vehicle and GPS updates.
+    function start() {
+        if (!py.ready) return;
+        py.call("htl.app.start", [], null);
+        gps.start();
+    }
+
+    // Stop periodic vehicle and GPS updates.
+    function stop() {
+        if (!py.ready) return;
+        py.call("htl.app.stop", [], null);
+        gps.stop();
+    }
+
     // Update location markers of vehicles that match id.
     function updateVehicle(id, x, y, bearing, line) {
-        for (var i = 0; i < map.mapItems.length; i++) {
-            if (map.mapItems[i].vehicleId == id) {
-                map.mapItems[i].coordinate.longitude = x;
-                map.mapItems[i].coordinate.latitude = y;
-                map.mapItems[i].bearing = bearing;
-                map.mapItems[i].line = line;
+        for (var i = 0; i < map.vehicles.length; i++) {
+            if (map.vehicles[i].vehicleId == id) {
+                map.vehicles[i].coordinate.longitude = x;
+                map.vehicles[i].coordinate.latitude = y;
+                map.vehicles[i].bearing = bearing;
+                map.vehicles[i].line = line;
             }
         }
     }

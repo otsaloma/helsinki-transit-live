@@ -1,6 +1,6 @@
 /* -*- coding: utf-8-unix -*-
  *
- * Copyright (C) 2013-2014 Osmo Salomaa
+ * Copyright (C) 2014 Osmo Salomaa
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,13 @@
  */
 
 import QtQuick 2.0
-import io.thp.pyotherside 1.0
+import QtLocation 5.0
 
-Python {
-    id: py
-    property bool ready: false
-    Component.onCompleted: {
-        addImportPath(Qt.resolvedUrl("..").substr("file://".length));
-        importModule("htl", function() {
-            py.call("htl.main", [], function() {
-                py.ready = true;
-            });
-        });
+MapQuickItem {
+    anchorPoint.x: image.width/2
+    anchorPoint.y: image.height/2
+    sourceItem: Image {
+        id: image
+        source: "icons/position.png"
     }
-    onError: console.log("Error: " + traceback);
 }

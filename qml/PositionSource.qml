@@ -1,6 +1,6 @@
 /* -*- coding: utf-8-unix -*-
  *
- * Copyright (C) 2013-2014 Osmo Salomaa
+ * Copyright (C) 2014 Osmo Salomaa
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,10 @@
  */
 
 import QtQuick 2.0
-import io.thp.pyotherside 1.0
+import QtPositioning 5.0
 
-Python {
-    id: py
-    property bool ready: false
-    Component.onCompleted: {
-        addImportPath(Qt.resolvedUrl("..").substr("file://".length));
-        importModule("htl", function() {
-            py.call("htl.main", [], function() {
-                py.ready = true;
-            });
-        });
-    }
-    onError: console.log("Error: " + traceback);
+PositionSource {
+    active: false
+    updateInterval: 1000
+    property double initTime: Date.now()
 }

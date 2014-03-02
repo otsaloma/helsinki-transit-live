@@ -20,11 +20,9 @@ import QtQuick 2.0
 import QtLocation 5.0
 
 MapQuickItem {
-    id: item
+    id: vehicle
     anchorPoint.x: image.width/2
     anchorPoint.y: image.height/2
-    height: image.height
-    width: image.width
     property double bearing: 0
     property string color: "#000000"
     property string line: ""
@@ -33,16 +31,15 @@ MapQuickItem {
     sourceItem: Item {
         Image {
             id: image
-            asynchronous: true
-            rotation: item.bearing
-            source: "icons/" + item.type + ".png"
+            rotation: vehicle.bearing
+            source: "icons/" + vehicle.type + ".png"
             transformOrigin: Item.Center
         }
         Rectangle {
             id: rectangle
             anchors.horizontalCenter: image.horizontalCenter
             anchors.verticalCenter: image.verticalCenter
-            color: item.color
+            color: vehicle.color
             height: text.height
             width: text.width
         }
@@ -54,7 +51,7 @@ MapQuickItem {
             font.bold: true
             font.family: "sans"
             font.pixelSize: 16
-            text: item.line
+            text: vehicle.line
             textFormat: Text.PlainText
         }
     }
