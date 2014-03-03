@@ -32,6 +32,8 @@ Map {
     property var gps: PositionSource {}
     property var position: map.gps.position
     property var positionMarker: PositionMarker {}
+    property double positionPrevX: null
+    property double positionPrevY: null
     property var vehicles: []
 
     Component.onCompleted: {
@@ -46,13 +48,25 @@ Map {
     }
 
     onPositionChanged: {
-        // Center map based on a couple initial positioning values.
-        if (Date.now() - gps.initTime < 3500) {
+        if (!map.positionPrevX) {
+            // Center map on first position data received.
             map.center = map.position.coordinate;
-        } else if (gps.updateInterval < 4500) {
+        } else if (Date.now() - gps.initTime < 9999) {
+            // Calculate approximate distance around Helsinki latitude
+            // to the previous positioning value and center map if that
+            // distance is above threshold.
+            var x2 = map.position.coordinate.longitude;
+            var y2 = map.position.coordinate.latitude;
+            var xd = (x2 - map.positionPrevX) *  56000;
+            var yd = (y2 - map.positionPrevY) * 111000;
+            if (Math.sqrt(xd*xd + yd*yd) > 250)
+                map.center = map.position.coordinate;
+        } else if (gps.updateInterval < 5000) {
             gps.updateInterval = 5000;
         }
         positionMarker.coordinate = map.position.coordinate;
+        map.positionPrevX = map.position.coordinate.longitude;
+        map.positionPrevY = map.position.coordinate.latitude;
     }
 
     // Add a marker to the map for a new vehicle.
