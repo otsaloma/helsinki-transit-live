@@ -34,6 +34,7 @@ from htl.vehicle import *
 from htl.application import *
 
 def main():
+    """Initialize application."""
     global app
     app = Application(interval=3)
     # XXX: Try to crash less often.

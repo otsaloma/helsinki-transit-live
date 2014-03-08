@@ -38,7 +38,7 @@ Map {
 
     Component.onCompleted: {
         map.zoomLevel = 15;
-        gps.start();
+        map.gps.start();
     }
 
     Keys.onPressed: {
@@ -51,7 +51,7 @@ Map {
         if (!map.positionPrevX) {
             // Center map on first position data received.
             map.center = map.position.coordinate;
-        } else if (Date.now() - gps.initTime < 9999) {
+        } else if (Date.now() - map.gps.initTime < 9999) {
             // Calculate approximate distance around Helsinki latitude
             // to the previous positioning value and center map if that
             // distance is above threshold.
@@ -61,10 +61,10 @@ Map {
             var yd = (y2 - map.positionPrevY) * 111000;
             if (Math.sqrt(xd*xd + yd*yd) > 250)
                 map.center = map.position.coordinate;
-        } else if (gps.updateInterval < 5000) {
-            gps.updateInterval = 5000;
+        } else if (map.gps.updateInterval < 5000) {
+            map.gps.updateInterval = 5000;
         }
-        positionMarker.coordinate = map.position.coordinate;
+        map.positionMarker.coordinate = map.position.coordinate;
         map.positionPrevX = map.position.coordinate.longitude;
         map.positionPrevY = map.position.coordinate.latitude;
     }
@@ -106,14 +106,14 @@ Map {
     function start() {
         if (!py.ready) return;
         py.call("htl.app.start", [], null);
-        gps.start();
+        map.gps.start();
     }
 
     // Stop periodic vehicle and GPS updates.
     function stop() {
         if (!py.ready) return;
         py.call("htl.app.stop", [], null);
-        gps.stop();
+        map.gps.stop();
     }
 
     // Update location markers of vehicles that match id.
