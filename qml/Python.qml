@@ -25,9 +25,8 @@ Python {
     Component.onCompleted: {
         addImportPath(Qt.resolvedUrl("..").substr("file://".length));
         importModule("htl", function() {
-            py.call("htl.main", [], function() {
-                py.ready = true;
-            });
+            py.call_sync("htl.main", []);
+            py.ready = true;
         });
     }
     onError: console.log("Error: " + traceback);

@@ -25,7 +25,6 @@ http://transport.wspgroup.fi/hklkartta/
 __version__ = "0.4"
 
 import collections
-import time
 
 states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
 
@@ -37,6 +36,4 @@ def main():
     """Initialize application."""
     global app
     app = Application(interval=3)
-    # XXX: Try to crash less often.
-    time.sleep(1)
     app.start()

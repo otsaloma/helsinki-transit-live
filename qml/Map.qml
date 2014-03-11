@@ -99,7 +99,7 @@ Map {
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
         var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
-        py.call("htl.app.set_bbox", bbox, null);
+        py.call_sync("htl.app.set_bbox", bbox);
     }
 
     // Start periodic vehicle and GPS updates.
