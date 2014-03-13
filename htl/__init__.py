@@ -22,7 +22,7 @@ http://developer.reittiopas.fi/pages/en/other-apis.php
 http://transport.wspgroup.fi/hklkartta/
 """
 
-__version__ = "0.4"
+__version__ = "0.5"
 
 import collections
 states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)

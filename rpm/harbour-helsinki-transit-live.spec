@@ -2,7 +2,7 @@
 %define __os_install_post %{___build_post}
 
 Name: harbour-helsinki-transit-live
-Version: 0.4
+Version: 0.5
 Release: 1
 Summary: Real-time locations of HSL public transportation vehicles
 License: GPLv3+
