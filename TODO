@@ -1,8 +1,7 @@
-Helsinki Transit Live 0.4.1
-===========================
+Helsinki Transit Live 0.5
+=========================
 
- [/] Fix crashes
-     - For start/stop, revisit thread queuing
+ [X] Don't crash anymore
 
 Helsinki Transit Live 1.0
 =========================

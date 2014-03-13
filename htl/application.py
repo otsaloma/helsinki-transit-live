@@ -19,6 +19,7 @@
 
 import htl
 import pyotherside
+import queue
 import sys
 import threading
 import time
@@ -33,18 +34,34 @@ class Application:
 
     def __init__(self, interval):
         """Initialize an :class:`Application` instance."""
+        self._event_queue = queue.Queue()
+        self._opener = None
+        self._timestamp = int(time.time()*1000)
         self.bbox = htl.BBox(0,0,0,0)
         self.interval = interval
-        self.opener = None
-        self.thread_queue = []
         self.vehicles = {}
+        self._init_event_thread()
         self._init_url_opener()
+
+    def _init_event_thread(self):
+        """Initialize the event handling thread."""
+        target = self._process_event_queue
+        thread = threading.Thread(target=target, daemon=True)
+        thread.start()
 
     def _init_url_opener(self):
         """Initialize the URL opener to use for downloading data."""
-        self.opener = urllib.request.build_opener()
+        self._opener = urllib.request.build_opener()
         agent = "helsinki-transit-live/{}".format(htl.__version__)
-        self.opener.addheaders = [("User-agent", agent)]
+        self._opener.addheaders = [("User-agent", agent)]
+
+    def _process_event_queue(self):
+        """Monitor the event queue and feed items for update."""
+        while True:
+            do_update, timestamp = self._event_queue.get()
+            if do_update:
+                self._update(timestamp)
+            self._event_queue.task_done()
 
     def set_bbox(self, xmin, xmax, ymin, ymax):
         """Set coordinates of the bounding box."""
@@ -55,45 +72,28 @@ class Application:
 
     def start(self):
         """Start threaded infinite periodic updates."""
-        if (self.thread_queue and
-            self.thread_queue[-1] is not None): return
-        # Queue a new update thread, but delay start until
-        # previous start and stop events have been processed.
-        thread = threading.Thread(target=self.update)
-        self.thread_queue.append(thread)
-        while (self.thread_queue and
-               self.thread_queue[0] is not thread):
-            time.sleep(self.interval/2)
-        thread.start()
+        self._timestamp = int(time.time()*1000)
+        self._event_queue.put((True, self._timestamp))
 
     def stop(self):
         """Stop threaded infinite periodic updates."""
-        if (self.thread_queue and
-            self.thread_queue[-1] is None): return
-        self.thread_queue.append(None)
+        self._timestamp = int(time.time()*1000)
+        self._event_queue.put((False, self._timestamp))
 
-    def update(self):
+    def _update(self, timestamp):
         """Start infinite periodic updates."""
-        while True:
+        while timestamp == self._timestamp:
             pyotherside.send("send-bbox")
             time.sleep(self.interval/2)
             if self.bbox.area > 0:
-                self.update_locations()
-                self.update_map()
+                self._update_locations()
+                self._update_map()
             time.sleep(self.interval/2)
-            if len(self.thread_queue) > 1:
-                # Quit this thread if later start and/or
-                # stop events have been queued.
-                self.thread_queue.pop(0)
-                while (self.thread_queue and
-                       self.thread_queue[0] is None):
-                    self.thread_queue.pop(0)
-                break
 
-    def update_locations(self):
+    def _update_locations(self):
         """Download and update locations of vehicles."""
         try:
-            f = self.opener.open(self.url, timeout=10)
+            f = self._opener.open(self._url, timeout=10)
             text = f.read(102400).decode("ascii", errors="ignore")
             f.close()
         except Exception as error:
@@ -129,7 +129,7 @@ class Application:
             vehicle.y = y
             vehicle.bearing = bearing
 
-    def update_map(self):
+    def _update_map(self):
         """Update vehicle markers."""
         for id, vehicle in list(self.vehicles.items()):
             if vehicle.state == htl.states.ADD:
@@ -157,7 +157,7 @@ class Application:
                 del self.vehicles[id]
 
     @property
-    def url(self):
+    def _url(self):
         """URL pointing to HSL Live data for the current bounding box."""
         return ("http://83.145.232.209:10001/?type=vehicles"
                 "&lng1={:.6f}&lat1={:.6f}&lng2={:.6f}&lat2={:.6f}"

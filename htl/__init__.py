@@ -25,7 +25,6 @@ http://transport.wspgroup.fi/hklkartta/
 __version__ = "0.4"
 
 import collections
-
 states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
 
 from htl.bbox import *

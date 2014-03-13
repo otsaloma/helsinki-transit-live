@@ -69,8 +69,8 @@ Map {
         map.positionPrevY = map.position.coordinate.latitude;
     }
 
-    // Add a marker to the map for a new vehicle.
     function addVehicle(id, x, y, bearing, type, line, color) {
+        // Add a marker to the map for a new vehicle.
         var component = Qt.createComponent("Vehicle.qml");
         var item = component.createObject(map);
         item.vehicleId = id;
@@ -83,18 +83,17 @@ Map {
         map.addMapItem(item);
     }
 
-    // Remove vehicle markers that match id.
     function removeVehicle(id) {
+        // Remove vehicle markers that match id.
         for (var i = map.vehicles.length-1; i >= 0; i--) {
-            if (map.vehicles[i].vehicleId == id) {
-                map.removeMapItem(map.vehicles[i]);
-                map.vehicles.splice(i, 1);
-            }
+            if (map.vehicles[i].vehicleId != id) continue;
+            map.removeMapItem(map.vehicles[i]);
+            map.vehicles.splice(i, 1);
         }
     }
 
-    // Send coordinates of the visible area to the Python backend.
     function sendBBox() {
+        // Send coordinates of the visible area to the Python backend.
         if (map.width <= 0 || map.height <= 0) return;
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
@@ -102,29 +101,28 @@ Map {
         py.call_sync("htl.app.set_bbox", bbox);
     }
 
-    // Start periodic vehicle and GPS updates.
     function start() {
+        // Start periodic vehicle and GPS updates.
         if (!py.ready) return;
-        py.call("htl.app.start", [], null);
+        py.call_sync("htl.app.start", []);
         map.gps.start();
     }
 
-    // Stop periodic vehicle and GPS updates.
     function stop() {
+        // Stop periodic vehicle and GPS updates.
         if (!py.ready) return;
-        py.call("htl.app.stop", [], null);
+        py.call_sync("htl.app.stop", []);
         map.gps.stop();
     }
 
-    // Update location markers of vehicles that match id.
     function updateVehicle(id, x, y, bearing, line) {
+        // Update location markers of vehicles that match id.
         for (var i = 0; i < map.vehicles.length; i++) {
-            if (map.vehicles[i].vehicleId == id) {
-                map.vehicles[i].coordinate.longitude = x;
-                map.vehicles[i].coordinate.latitude = y;
-                map.vehicles[i].bearing = bearing;
-                map.vehicles[i].line = line;
-            }
+            if (map.vehicles[i].vehicleId != id) continue;
+            map.vehicles[i].coordinate.longitude = x;
+            map.vehicles[i].coordinate.latitude = y;
+            map.vehicles[i].bearing = bearing;
+            map.vehicles[i].line = line;
         }
     }
 }

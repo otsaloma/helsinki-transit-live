@@ -23,11 +23,6 @@ MapQuickItem {
     id: vehicle
     anchorPoint.x: image.width/2
     anchorPoint.y: image.height/2
-    property double bearing: 0
-    property string color: "#000000"
-    property string line: ""
-    property string type: "unknown"
-    property string vehicleId
     sourceItem: Item {
         Image {
             id: image
@@ -55,4 +50,9 @@ MapQuickItem {
             textFormat: Text.PlainText
         }
     }
+    property double bearing: 0
+    property string color: "#000000"
+    property string line: ""
+    property string type: "unknown"
+    property string vehicleId
 }
