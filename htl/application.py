@@ -54,7 +54,8 @@ class Application:
         """Initialize a persistent HTTP connection."""
         self._http = http.client.HTTPConnection("83.145.232.209:10001", timeout=10)
         agent = "helsinki-transit-live/{}".format(htl.__version__)
-        self._headers = {"User-Agent": agent}
+        self._headers = {"Connection": "Keep-Alive",
+                         "User-Agent": agent}
 
     def _process_event_queue(self):
         """Monitor the event queue and feed items for update."""
