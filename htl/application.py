@@ -18,12 +18,12 @@
 """Show real-time locations of HSL public transportation vehicles."""
 
 import htl
+import http.client
 import pyotherside
 import queue
 import sys
 import threading
 import time
-import urllib.request
 
 __all__ = ("Application",)
 
@@ -35,13 +35,14 @@ class Application:
     def __init__(self, interval):
         """Initialize an :class:`Application` instance."""
         self._event_queue = queue.Queue()
-        self._opener = None
+        self._headers = None
+        self._http = None
         self._timestamp = int(time.time()*1000)
         self.bbox = htl.BBox(0,0,0,0)
         self.interval = interval
         self.vehicles = {}
         self._init_event_thread()
-        self._init_url_opener()
+        self._init_http_connection()
 
     def _init_event_thread(self):
         """Initialize the event handling thread."""
@@ -49,11 +50,11 @@ class Application:
         thread = threading.Thread(target=target, daemon=True)
         thread.start()
 
-    def _init_url_opener(self):
-        """Initialize the URL opener to use for downloading data."""
-        self._opener = urllib.request.build_opener()
+    def _init_http_connection(self):
+        """Initialize a persistent HTTP connection."""
+        self._http = http.client.HTTPConnection("83.145.232.209:10001", timeout=10)
         agent = "helsinki-transit-live/{}".format(htl.__version__)
-        self._opener.addheaders = [("User-agent", agent)]
+        self._headers = {"User-Agent": agent}
 
     def _process_event_queue(self):
         """Monitor the event queue and feed items for update."""
@@ -93,9 +94,14 @@ class Application:
     def _update_locations(self):
         """Download and update locations of vehicles."""
         try:
-            f = self._opener.open(self._url, timeout=10)
-            text = f.read(102400).decode("ascii", errors="ignore")
-            f.close()
+            self._http.request("GET", self._url, headers=self._headers)
+            response = self._http.getresponse()
+            if response.status != 200:
+                raise Exception("Server responded {}: {}"
+                                .format(repr(response.status),
+                                        repr(response.reason)))
+
+            text = response.read(102400).decode("ascii", errors="ignore")
         except Exception as error:
             print("Failed to download data: {}"
                   .format(str(error)),

@@ -1,4 +1,11 @@
+Helsinki Transit Live 0.6
+=========================
+
+ [X] Use a persistent HTTP connection (this should make updating
+     more regular and reliable)
+
 Helsinki Transit Live 1.0
 =========================
 
- * Bump pyotherside API version when available
+ * Bump PyOtherSide API version when available and replace all sync
+   calls with async ones as they should no longer crash
