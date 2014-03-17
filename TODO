@@ -9,3 +9,5 @@ Helsinki Transit Live 1.0
 
  * Bump PyOtherSide API version when available and replace all sync
    calls with async ones as they should no longer crash
+ * Allow landscape by Page.allowedOrientations
+   - Need to figure out how to rotate gestures too
