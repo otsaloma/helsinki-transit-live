@@ -108,6 +108,8 @@ class Application:
                   .format(str(error)),
                   file=sys.stderr)
 
+            self._http.close()
+            self._http.connect()
             return
         for id, vehicle in self.vehicles.items():
             vehicle.state = htl.states.REMOVE
