@@ -7,7 +7,9 @@ Helsinki Transit Live 0.6
 Helsinki Transit Live 1.0
 =========================
 
- * Bump PyOtherSide API version when available and replace all sync
-   calls with async ones as they should no longer crash
+ * Port zoom level locking from Poor?
  * Allow landscape by Page.allowedOrientations
    - Need to figure out how to rotate gestures too
+ * Bump PyOtherSide API version when available and replace all sync
+   calls with async ones assuming they no longer crash
+ * Check versions of Qt components (bump to 5.2?)

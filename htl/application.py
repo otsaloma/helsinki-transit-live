@@ -109,7 +109,7 @@ class Application:
                   file=sys.stderr)
 
             self._http.close()
-            self._http.connect()
+            self._init_http_connection()
             return
         for id, vehicle in self.vehicles.items():
             vehicle.state = htl.states.REMOVE
