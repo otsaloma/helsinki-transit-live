@@ -44,7 +44,7 @@ MapQuickItem {
             anchors.verticalCenter: image.verticalCenter
             color: "white"
             font.bold: true
-            font.family: "sans"
+            font.family: "sans-serif"
             font.pixelSize: 16
             text: vehicle.line
             textFormat: Text.PlainText

@@ -3,11 +3,11 @@ Helsinki Transit Live 0.6
 
  [X] Use a persistent HTTP connection (this should make updating
      more regular and reliable)
+ [X] Use discrete zoom levels to avoid fuzziness
 
 Helsinki Transit Live 1.0
 =========================
 
- * Port zoom level locking from Poor?
  * Allow landscape by Page.allowedOrientations
    - Need to figure out how to rotate gestures too
  * Bump PyOtherSide API version when available and replace all sync
