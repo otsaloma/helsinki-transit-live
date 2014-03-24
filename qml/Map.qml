@@ -35,34 +35,16 @@ Map {
     property double positionPrevX: null
     property double positionPrevY: null
     property var vehicles: []
-    property var zoomLevelPrev: -1
 
     Component.onCompleted: {
         map.zoomLevel = 15;
         map.gps.start();
     }
 
-    gesture.onPinchFinished: {
-        // Round piched zoom level to avoid fuzziness.
-        if (map.zoomLevel < map.zoomLevelPrev) {
-            map.zoomLevel % 1 < 0.75 ?
-                map.zoomLevel = Math.floor(map.zoomLevel) :
-                map.zoomLevel = Math.ceil(map.zoomLevel);
-        } else if (map.zoomLevel > map.zoomLevelPrev) {
-            map.zoomLevel % 1 > 0.25 ?
-                map.zoomLevel = Math.ceil(map.zoomLevel) :
-                map.zoomLevel = Math.floor(map.zoomLevel);
-        } else {
-            return;
-        }
-        map.zoomLevelPrev = map.zoomLevel;
-    }
-
     Keys.onPressed: {
         // Allow zooming with plus and minus keys on the emulator.
         (event.key == Qt.Key_Plus) && map.zoomLevel++;
         (event.key == Qt.Key_Minus) && map.zoomLevel--;
-        map.zoomLevelPrev = map.zoomLevel;
     }
 
     onPositionChanged: {
