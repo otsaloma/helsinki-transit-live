@@ -68,7 +68,8 @@ Map {
     onPositionChanged: {
         if (!map.positionPrevX) {
             // Center map on first position data received.
-            map.center = map.position.coordinate;
+            map.center.longitude = map.position.coordinate.longitude;
+            map.center.latitude = map.position.coordinate.latitude;
         } else if (Date.now() - map.gps.initTime < 9999) {
             // Calculate approximate distance around Helsinki latitude
             // to the previous positioning value and center map if that
@@ -77,12 +78,13 @@ Map {
             var y2 = map.position.coordinate.latitude;
             var xd = (x2 - map.positionPrevX) *  56000;
             var yd = (y2 - map.positionPrevY) * 111000;
-            if (Math.sqrt(xd*xd + yd*yd) > 250)
-                map.center = map.position.coordinate;
+            if (Math.sqrt(xd*xd + yd*yd) > 250) {
+                map.center.longitude = map.position.coordinate.longitude;
+                map.center.latitude = map.position.coordinate.latitude;
+            }
         } else if (map.gps.updateInterval < 5000) {
             map.gps.updateInterval = 5000;
         }
-        map.positionMarker.coordinate = map.position.coordinate;
         map.positionPrevX = map.position.coordinate.longitude;
         map.positionPrevY = map.position.coordinate.latitude;
     }
