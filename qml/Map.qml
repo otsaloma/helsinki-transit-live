@@ -29,16 +29,16 @@ Map {
     gesture.enabled: true
     plugin: MapPlugin {}
 
+    property var coordinatePrev: QtPositioning.coordinate(0, 0)
     property var gps: PositionSource {}
     property var position: map.gps.position
     property var positionMarker: PositionMarker {}
-    property double positionPrevX: null
-    property double positionPrevY: null
     property var vehicles: []
-    property var zoomLevelPrev: -1
+    property real zoomLevelPrev: -1
 
     Component.onCompleted: {
         map.zoomLevel = 15;
+        map.zoomLevelPrev = map.zoomLevel;
         map.gps.start();
     }
 
@@ -48,14 +48,13 @@ Map {
             map.zoomLevel % 1 < 0.75 ?
                 map.zoomLevel = Math.floor(map.zoomLevel) :
                 map.zoomLevel = Math.ceil(map.zoomLevel);
+            map.zoomLevelPrev = map.zoomLevel;
         } else if (map.zoomLevel > map.zoomLevelPrev) {
             map.zoomLevel % 1 > 0.25 ?
                 map.zoomLevel = Math.ceil(map.zoomLevel) :
                 map.zoomLevel = Math.floor(map.zoomLevel);
-        } else {
-            return;
+            map.zoomLevelPrev = map.zoomLevel;
         }
-        map.zoomLevelPrev = map.zoomLevel;
     }
 
     Keys.onPressed: {
@@ -66,27 +65,24 @@ Map {
     }
 
     onPositionChanged: {
-        if (!map.positionPrevX) {
-            // Center map on first position data received.
-            map.center.longitude = map.position.coordinate.longitude;
-            map.center.latitude = map.position.coordinate.latitude;
-        } else if (Date.now() - map.gps.initTime < 9999) {
+        if (Date.now() - map.gps.initTime < 9999) {
             // Calculate approximate distance around Helsinki latitude
             // to the previous positioning value and center map if that
             // distance is above threshold.
             var x2 = map.position.coordinate.longitude;
             var y2 = map.position.coordinate.latitude;
-            var xd = (x2 - map.positionPrevX) *  56000;
-            var yd = (y2 - map.positionPrevY) * 111000;
+            var xd = (x2 - map.coordinatePrev.longitude) * 56000;
+            var yd = (y2 - map.coordinatePrev.latitude) * 111000;
             if (Math.sqrt(xd*xd + yd*yd) > 250) {
                 map.center.longitude = map.position.coordinate.longitude;
                 map.center.latitude = map.position.coordinate.latitude;
             }
         } else if (map.gps.updateInterval < 5000) {
+            // Reduce GPS polling after initial centering is done.
             map.gps.updateInterval = 5000;
         }
-        map.positionPrevX = map.position.coordinate.longitude;
-        map.positionPrevY = map.position.coordinate.latitude;
+        map.coordinatePrev.longitude = map.position.coordinate.longitude;
+        map.coordinatePrev.latitude = map.position.coordinate.latitude;
     }
 
     function addVehicle(id, x, y, bearing, type, line, color) {
