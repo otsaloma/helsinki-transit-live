@@ -65,6 +65,8 @@ Map {
     }
 
     onPositionChanged: {
+        if (!map.position.coordinate.longitude ||
+            !map.position.coordinate.latitude) return;
         if (Date.now() - map.gps.initTime < 9999) {
             // Calculate approximate distance around Helsinki latitude
             // to the previous positioning value and center map if that
