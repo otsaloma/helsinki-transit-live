@@ -1,7 +1,7 @@
 # -*- coding: us-ascii-unix -*-
 
 name       = harbour-helsinki-transit-live
-version    = 0.5
+version    = 0.6
 DESTDIR    =
 PREFIX     = /usr/local
 datadir    = $(DESTDIR)$(PREFIX)/share/$(name)

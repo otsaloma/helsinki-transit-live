@@ -29,11 +29,11 @@ Map {
     gesture.enabled: true
     plugin: MapPlugin {}
 
-    property var coordinatePrev: QtPositioning.coordinate(0, 0)
-    property var gps: PositionSource {}
-    property var position: map.gps.position
-    property var positionMarker: PositionMarker {}
-    property var vehicles: []
+    property var  coordinatePrev: QtPositioning.coordinate(0, 0)
+    property var  gps: PositionSource {}
+    property var  position: map.gps.position
+    property var  positionMarker: PositionMarker {}
+    property var  vehicles: []
     property real zoomLevelPrev: -1
 
     Component.onCompleted: {

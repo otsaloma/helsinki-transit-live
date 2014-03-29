@@ -1,3 +1,10 @@
+Helsinki Transit Live 0.6
+=========================
+
+ * Use a persistent HTTP connection (this should make updating
+   more regular and reliable)
+ * Use discrete zoom levels to avoid fuzziness
+
 Helsinki Transit Live 0.5
 =========================
 
