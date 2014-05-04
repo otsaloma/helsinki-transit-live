@@ -1,3 +1,11 @@
+Helsinki Transit Live 0.7
+=========================
+
+ * Fix map tiles not being displayed or only a part being displayed
+   at start, before any interaction
+ * Bump required PyOtherSide version to 1.2 (included in Sailfish OS
+   1.0.4.20 "Ohijärvi" released 2014-03-17)
+
 Helsinki Transit Live 0.6.1
 ===========================
 

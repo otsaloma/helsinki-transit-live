@@ -22,7 +22,7 @@ http://developer.reittiopas.fi/pages/en/other-apis.php
 http://transport.wspgroup.fi/hklkartta/
 """
 
-__version__ = "0.6.1"
+__version__ = "0.7"
 
 try:
     import pyotherside
