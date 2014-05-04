@@ -23,10 +23,11 @@ Python {
     id: py
     property bool ready: false
     Component.onCompleted: {
-        addImportPath(Qt.resolvedUrl("..").substr("file://".length));
+        addImportPath(Qt.resolvedUrl(".."));
         importModule("htl", function() {
-            py.call_sync("htl.main", []);
-            py.ready = true;
+            py.call("htl.main", [], function() {
+                py.ready = true;
+            });
         });
     }
     onError: console.log("Error: " + traceback);

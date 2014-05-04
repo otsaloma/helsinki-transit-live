@@ -116,20 +116,20 @@ Map {
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
         var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
-        py.call_sync("htl.app.set_bbox", bbox);
+        py.call("htl.app.set_bbox", bbox, null);
     }
 
     function start() {
         // Start periodic vehicle and GPS updates.
         if (!py.ready) return;
-        py.call_sync("htl.app.start", []);
+        py.call("htl.app.start", [], null);
         map.gps.start();
     }
 
     function stop() {
         // Stop periodic vehicle and GPS updates.
         if (!py.ready) return;
-        py.call_sync("htl.app.stop", []);
+        py.call("htl.app.stop", [], null);
         map.gps.stop();
     }
 

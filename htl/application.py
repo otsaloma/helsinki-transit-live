@@ -34,12 +34,12 @@ class Application:
 
     def __init__(self, interval):
         """Initialize an :class:`Application` instance."""
+        self.bbox = htl.BBox(0,0,0,0)
         self._event_queue = queue.Queue()
         self._headers = None
+        self.interval = interval
         self._http = None
         self._timestamp = int(time.time()*1000)
-        self.bbox = htl.BBox(0,0,0,0)
-        self.interval = interval
         self.vehicles = {}
         self._init_event_thread()
         self._init_http_connection()
@@ -52,6 +52,7 @@ class Application:
 
     def _init_http_connection(self):
         """Initialize a persistent HTTP connection."""
+        # http://developer.reittiopas.fi/pages/en/other-apis.php
         self._http = http.client.HTTPConnection("83.145.232.209:10001", timeout=10)
         agent = "helsinki-transit-live/{}".format(htl.__version__)
         self._headers = {"Connection": "Keep-Alive",
@@ -168,6 +169,7 @@ class Application:
     @property
     def _url(self):
         """URL pointing to HSL Live data for the current bounding box."""
+        # http://developer.reittiopas.fi/pages/en/other-apis.php
         return ("http://83.145.232.209:10001/?type=vehicles"
                 "&lng1={:.6f}&lat1={:.6f}&lng2={:.6f}&lat2={:.6f}"
                 .format(self.bbox.xmin,

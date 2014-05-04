@@ -25,13 +25,9 @@ ApplicationWindow {
     cover: undefined
     initialPage: Page {
         id: page
-        Map {
-            id: map
-        }
+        Map { id: map }
     }
-    Python {
-        id: py
-    }
+    Python { id: py }
     Component.onCompleted: {
         py.setHandler("add-vehicle", map.addVehicle);
         py.setHandler("remove-vehicle", map.removeVehicle);
