@@ -24,6 +24,19 @@ http://transport.wspgroup.fi/hklkartta/
 
 __version__ = "0.6.1"
 
+try:
+    import pyotherside
+except ImportError:
+    import sys
+    # Allow testing Python backend alone.
+    print("PyOtherSide not found, continuing anyway!",
+          file=sys.stderr)
+
+    class pyotherside:
+        def atexit(*args): pass
+        def send(*args): pass
+    sys.modules["pyotherside"] = pyotherside()
+
 import collections
 states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
 
