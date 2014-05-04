@@ -40,6 +40,9 @@ Map {
         map.zoomLevel = 15;
         map.zoomLevelPrev = map.zoomLevel;
         map.gps.start();
+        // For some reason we need to do something to trigger a redraw
+        // to avoid only a part of tiles being displayed at start.
+        map.clearMapItems();
     }
 
     gesture.onPinchFinished: {
