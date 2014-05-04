@@ -32,6 +32,7 @@ Map {
     property var  coordinatePrev: QtPositioning.coordinate(0, 0)
     property var  gps: PositionSource {}
     property var  position: map.gps.position
+    property var  positionMarker: PositionMarker {}
     property var  vehicles: []
     property real zoomLevelPrev: -1
 
@@ -39,9 +40,6 @@ Map {
         map.zoomLevel = 15;
         map.zoomLevelPrev = map.zoomLevel;
         map.gps.start();
-        var component = Qt.createComponent("PositionMarker.qml");
-        var item = component.createObject(map);
-        map.addMapItem(item);
     }
 
     gesture.onPinchFinished: {
@@ -126,6 +124,10 @@ Map {
         if (!py.ready) return;
         py.call("htl.app.start", [], null);
         map.gps.start();
+        // For some reason we need to do something to trigger a redraw
+        // to avoid only a part of tiles being displayed at start.
+        map.pan(1, -1);
+        map.pan(-1, 1);
     }
 
     function stop() {
