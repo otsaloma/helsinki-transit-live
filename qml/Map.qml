@@ -38,7 +38,6 @@ Map {
 
     Component.onCompleted: {
         map.setZoomLevel(15);
-        map.zoomLevelPrev = map.zoomLevel;
         map.gps.start();
     }
 
