@@ -66,7 +66,7 @@ Map {
         if (!map.position.coordinate.longitude) return;
         if (!map.position.coordinate.latitude) return;
         if (Date.now() - map.gps.initTime < 10000) {
-            if (gps.coordinatePrev.distanceTo(gps.position.coordinate) > 250) {
+            if (map.coordinatePrev.distanceTo(gps.position.coordinate) > 250) {
                 map.center.longitude = map.position.coordinate.longitude;
                 map.center.latitude = map.position.coordinate.latitude;
             }
@@ -102,11 +102,16 @@ Map {
     }
 
     function sendBBox() {
-        // Send coordinates of the visible area to the Python backend.
+        // Send coordinates of the data download area to the Python backend.
+        // Download data some amount outside screen to allow smooth panning.
         if (map.width <= 0 || map.height <= 0) return;
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
         var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
+        bbox[0] -= bbox[1] - bbox[0];
+        bbox[1] += bbox[1] - bbox[0];
+        bbox[2] -= bbox[3] - bbox[2];
+        bbox[3] += bbox[3] - bbox[2];
         py.call("htl.app.set_bbox", bbox, null);
     }
 

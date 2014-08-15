@@ -6,7 +6,7 @@ Version: 0.7
 Release: 1
 Summary: Real-time locations of HSL public transportation vehicles
 License: GPLv3+
-URL: https://github.com/otsaloma/helsinki-transit-live
+URL: http://github.com/otsaloma/helsinki-transit-live
 Source: %{name}-%{version}.tar.xz
 BuildArch: noarch
 BuildRequires: make
