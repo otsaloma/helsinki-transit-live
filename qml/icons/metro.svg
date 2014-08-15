@@ -13,7 +13,7 @@
    height="52"
    id="svg1901"
    sodipodi:version="0.32"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.5 r10040"
    sodipodi:docname="metro.svg"
    version="1.1">
   <defs
@@ -25,21 +25,23 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="14.913448"
-     inkscape:cx="1.5106036"
-     inkscape:cy="22.20669"
+     inkscape:zoom="13.190261"
+     inkscape:cx="26"
+     inkscape:cy="26"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="1920"
-     inkscape:window-height="1143"
+     inkscape:window-height="1136"
      inkscape:window-x="0"
      inkscape:window-y="27"
      showgrid="true"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     showborder="true"
+     inkscape:showpageshadow="false">
     <inkscape:grid
        type="xygrid"
        id="grid10137"
-       empspacing="5"
+       empspacing="13"
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true" />
@@ -63,7 +65,7 @@
      transform="translate(0,-1000.3622)">
     <path
        style="fill:#fe631e;fill-opacity:1;stroke:#ffffff;stroke-width:1.92676913999999999;stroke-linecap:square;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 10.963385,1026.3684 c 0,-8.301 1.036615,-8.0062 14.073,-25.0428 14.963615,17.0366 16.0002,16.7418 16.0002,25.0428 0,8.3012 -6.7321,15.0304 -15.0366,15.0304 -8.3045,0 -15.0366,-6.7292 -15.0366,-15.0304 z"
+       d="m 10.963385,1026.3684 c 0,-8.301 6.036615,-13.0062 15.036615,-25.0062 9,12 15.036585,16.7052 15.036585,25.0062 0,8.3012 -6.7321,15.0304 -15.0366,15.0304 -8.3045,0 -15.0366,-6.7292 -15.0366,-15.0304 z"
        id="path10139"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="scsss" />
