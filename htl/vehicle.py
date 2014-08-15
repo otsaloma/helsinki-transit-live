@@ -34,8 +34,8 @@ class Vehicle:
         self.y = 0
         self.bearing = 0
         self.state = htl.states.OK
-        for name, value in kwargs.items():
-            setattr(self, name, value)
+        for name in set(kwargs) & set(dir(self)):
+            setattr(self, name, kwargs[name])
 
     @property
     def color(self):
