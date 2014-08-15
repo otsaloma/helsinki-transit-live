@@ -37,7 +37,7 @@ Map {
     property real zoomLevelPrev: -1
 
     Component.onCompleted: {
-        map.zoomLevel = 15;
+        map.setZoomLevel(15);
         map.zoomLevelPrev = map.zoomLevel;
         map.gps.start();
     }
@@ -46,36 +46,27 @@ Map {
         // Round piched zoom level to avoid fuzziness.
         if (map.zoomLevel < map.zoomLevelPrev) {
             map.zoomLevel % 1 < 0.75 ?
-                map.zoomLevel = Math.floor(map.zoomLevel) :
-                map.zoomLevel = Math.ceil(map.zoomLevel);
-            map.zoomLevelPrev = map.zoomLevel;
+                map.setZoomLevel(Math.floor(map.zoomLevel)):
+                map.setZoomLevel(Math.ceil(map.zoomLevel));
         } else if (map.zoomLevel > map.zoomLevelPrev) {
             map.zoomLevel % 1 > 0.25 ?
-                map.zoomLevel = Math.ceil(map.zoomLevel) :
-                map.zoomLevel = Math.floor(map.zoomLevel);
-            map.zoomLevelPrev = map.zoomLevel;
+                map.setZoomLevel(Math.ceil(map.zoomLevel)):
+                map.setZoomLevel(Math.floor(map.zoomLevel));
         }
     }
 
     Keys.onPressed: {
         // Allow zooming with plus and minus keys on the emulator.
-        (event.key == Qt.Key_Plus) && map.zoomLevel++;
-        (event.key == Qt.Key_Minus) && map.zoomLevel--;
-        map.zoomLevelPrev = map.zoomLevel;
+        (event.key == Qt.Key_Plus) && map.setZoomLevel(map.zoomLevel+1);
+        (event.key == Qt.Key_Minus) && map.setZoomLevel(map.zoomLevel-1);
     }
 
     onPositionChanged: {
-        if (!map.position.coordinate.longitude ||
-            !map.position.coordinate.latitude) return;
-        if (Date.now() - map.gps.initTime < 9999) {
-            // Calculate approximate distance around Helsinki latitude
-            // to the previous positioning value and center map if that
-            // distance is above threshold.
-            var x2 = map.position.coordinate.longitude;
-            var y2 = map.position.coordinate.latitude;
-            var xd = (x2 - map.coordinatePrev.longitude) * 56000;
-            var yd = (y2 - map.coordinatePrev.latitude) * 111000;
-            if (Math.sqrt(xd*xd + yd*yd) > 250) {
+        // Do initial centering on big hops before positioning stabilises.
+        if (!map.position.coordinate.longitude) return;
+        if (!map.position.coordinate.latitude) return;
+        if (Date.now() - map.gps.initTime < 10000) {
+            if (gps.coordinatePrev.distanceTo(gps.position.coordinate) > 250) {
                 map.center.longitude = map.position.coordinate.longitude;
                 map.center.latitude = map.position.coordinate.latitude;
             }
@@ -119,10 +110,16 @@ Map {
         py.call("htl.app.set_bbox", bbox, null);
     }
 
+    function setZoomLevel(zoom) {
+        // Set the current zoom level.
+        map.zoomLevelPrev = map.zoomLevel;
+        map.zoomLevel = zoom;
+    }
+
     function start() {
         // Start periodic vehicle and GPS updates.
-        if (!py.ready) return;
-        py.call("htl.app.start", [], null);
+        if (py.ready)
+            py.call("htl.app.start", [], null);
         map.gps.start();
         // For some reason we need to do something to trigger a redraw
         // to avoid only a part of tiles being displayed at start.
@@ -132,8 +129,8 @@ Map {
 
     function stop() {
         // Stop periodic vehicle and GPS updates.
-        if (!py.ready) return;
-        py.call("htl.app.stop", [], null);
+        if (py.ready)
+            py.call("htl.app.stop", [], null);
         map.gps.stop();
     }
 

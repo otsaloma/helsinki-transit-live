@@ -28,20 +28,17 @@ MapQuickItem {
             id: image
             rotation: vehicle.bearing
             source: "icons/" + vehicle.type + ".png"
-            transformOrigin: Item.Center
         }
         Rectangle {
             id: rectangle
-            anchors.horizontalCenter: image.horizontalCenter
-            anchors.verticalCenter: image.verticalCenter
+            anchors.centerIn: image
             color: vehicle.color
             height: text.height
             width: text.width
         }
         Text {
             id: text
-            anchors.horizontalCenter: image.horizontalCenter
-            anchors.verticalCenter: image.verticalCenter
+            anchors.centerIn: image
             color: "white"
             font.bold: true
             font.family: "sans-serif"
@@ -54,5 +51,5 @@ MapQuickItem {
     property string color: "#000000"
     property string line: ""
     property string type: "unknown"
-    property string vehicleId
+    property string vehicleId: ""
 }

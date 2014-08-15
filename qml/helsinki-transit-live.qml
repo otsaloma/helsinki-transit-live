@@ -25,6 +25,9 @@ ApplicationWindow {
     cover: undefined
     initialPage: Page {
         id: page
+        // XXX: Map gestures don't work right in landscape.
+        // http://bugreports.qt-project.org/browse/QTBUG-40799
+        allowedOrientations: Orientation.Portrait
         Map { id: map }
     }
     Python { id: py }
