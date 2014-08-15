@@ -117,8 +117,8 @@ Map {
 
     function setZoomLevel(zoom) {
         // Set the current zoom level.
-        map.zoomLevelPrev = map.zoomLevel;
         map.zoomLevel = zoom;
+        map.zoomLevelPrev = zoom;
     }
 
     function start() {

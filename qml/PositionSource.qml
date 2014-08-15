@@ -22,5 +22,5 @@ import QtPositioning 5.0
 PositionSource {
     active: false
     updateInterval: 1000
-    property real initTime: Date.now()
+    property var initTime: Date.now()
 }
