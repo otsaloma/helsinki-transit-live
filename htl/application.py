@@ -42,7 +42,10 @@ class Application:
         self._timestamp = int(time.time()*1000)
         self.vehicles = {}
         self._init_event_thread()
-        self._init_http_connection()
+        try:
+            self._init_http_connection()
+        except Exception:
+            pass
 
     def _init_event_thread(self):
         """Initialize the event handling thread."""
@@ -96,6 +99,8 @@ class Application:
     def _update_locations(self):
         """Download and update locations of vehicles."""
         try:
+            if self._http is None:
+                self._http = self._init_http_connection()
             self._http.request("GET", self._url, headers=self._headers)
             response = self._http.getresponse()
             if response.status != 200:
@@ -103,14 +108,16 @@ class Application:
                                 .format(repr(response.status),
                                         repr(response.reason)))
 
-            text = response.read(102400).decode("ascii", errors="ignore")
+            blob = response.read(102400)
+            text = blob.decode("ascii", errors="ignore")
         except Exception as error:
             print("Failed to download data: {}"
                   .format(str(error)),
                   file=sys.stderr)
 
-            self._http.close()
-            self._init_http_connection()
+            if self._http is not None:
+                self._http.close()
+            self._http = None
             return
         for id, vehicle in self.vehicles.items():
             vehicle.state = htl.states.REMOVE
