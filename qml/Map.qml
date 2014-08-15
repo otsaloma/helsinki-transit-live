@@ -108,10 +108,10 @@ Map {
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
         var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
-        bbox[0] -= bbox[1] - bbox[0];
-        bbox[1] += bbox[1] - bbox[0];
-        bbox[2] -= bbox[3] - bbox[2];
-        bbox[3] += bbox[3] - bbox[2];
+        bbox[0] -= se.longitude - nw.longitude;
+        bbox[1] += se.longitude - nw.longitude;
+        bbox[2] -= nw.latitude - se.latitude;
+        bbox[3] += nw.latitude - se.latitude;
         py.call("htl.app.set_bbox", bbox, null);
     }
 
