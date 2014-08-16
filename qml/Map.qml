@@ -34,7 +34,7 @@ Map {
     property var  position: map.gps.position
     property var  positionMarker: PositionMarker {}
     property var  vehicles: []
-    property real zoomLevelPrev: -1
+    property real zoomLevelPrev: 8
 
     Component.onCompleted: {
         map.setZoomLevel(15);
@@ -64,14 +64,10 @@ Map {
         // Do initial centering on big hops before positioning stabilises.
         if (!map.position.coordinate.longitude) return;
         if (!map.position.coordinate.latitude) return;
-        if (Date.now() - map.gps.initTime < 10000) {
-            if (map.coordinatePrev.distanceTo(gps.position.coordinate) > 250) {
-                map.center.longitude = map.position.coordinate.longitude;
-                map.center.latitude = map.position.coordinate.latitude;
-            }
-        } else if (map.gps.updateInterval < 5000) {
-            // Reduce GPS polling after initial centering is done.
-            map.gps.updateInterval = 5000;
+        if (Date.now() - map.gps.initTime < 10000 &&
+            map.coordinatePrev.distanceTo(gps.position.coordinate) > 250) {
+            map.center.longitude = map.position.coordinate.longitude;
+            map.center.latitude = map.position.coordinate.latitude;
         }
         map.coordinatePrev.longitude = map.position.coordinate.longitude;
         map.coordinatePrev.latitude = map.position.coordinate.latitude;
@@ -106,11 +102,11 @@ Map {
         if (map.width <= 0 || map.height <= 0) return;
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
-        var bbox = [nw.longitude, se.longitude, se.latitude, nw.latitude];
-        bbox[0] -= se.longitude - nw.longitude;
-        bbox[1] += se.longitude - nw.longitude;
-        bbox[2] -= nw.latitude - se.latitude;
-        bbox[3] += nw.latitude - se.latitude;
+        var bbox = [nw.longitude - (se.longitude - nw.longitude),
+                    se.longitude + (se.longitude - nw.longitude),
+                    se.latitude  - (nw.latitude  - se.latitude),
+                    nw.latitude  + (nw.latitude  - se.latitude)];
+
         py.call("htl.app.set_bbox", bbox, null);
     }
 
