@@ -42,6 +42,7 @@ states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
 
 from htl.bbox import *
 from htl.vehicle import *
+from htl import http
 from htl.application import *
 
 def main():

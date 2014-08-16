@@ -18,7 +18,6 @@
 """Show real-time locations of HSL public transportation vehicles."""
 
 import htl
-import http.client
 import pyotherside
 import queue
 import sys
@@ -38,28 +37,15 @@ class Application:
         self._event_queue = queue.Queue()
         self._headers = None
         self.interval = interval
-        self._http = None
         self._timestamp = int(time.time()*1000)
         self.vehicles = {}
         self._init_event_thread()
-        try:
-            self._init_http_connection()
-        except Exception:
-            pass
 
     def _init_event_thread(self):
         """Initialize the event handling thread."""
         target = self._process_event_queue
         thread = threading.Thread(target=target, daemon=True)
         thread.start()
-
-    def _init_http_connection(self):
-        """Initialize a persistent HTTP connection."""
-        # http://developer.reittiopas.fi/pages/en/other-apis.php
-        self._http = http.client.HTTPConnection("83.145.232.209:10001", timeout=10)
-        agent = "helsinki-transit-live/{}".format(htl.__version__)
-        self._headers = {"Connection": "Keep-Alive",
-                         "User-Agent": agent}
 
     def _process_event_queue(self):
         """Monitor the event queue and feed items for update."""
@@ -99,25 +85,8 @@ class Application:
     def _update_locations(self):
         """Download and update locations of vehicles."""
         try:
-            if self._http is None:
-                self._http = self._init_http_connection()
-            self._http.request("GET", self._url, headers=self._headers)
-            response = self._http.getresponse()
-            if response.status != 200:
-                raise Exception("Server responded {}: {}"
-                                .format(repr(response.status),
-                                        repr(response.reason)))
-
-            blob = response.read(102400)
-            text = blob.decode("ascii", errors="ignore")
-        except Exception as error:
-            print("Failed to download data: {}"
-                  .format(str(error)),
-                  file=sys.stderr)
-
-            if self._http is not None:
-                self._http.close()
-            self._http = None
+            text = htl.http.request_url(self._url, "utf_8")
+        except Exception:
             return
         for id, vehicle in self.vehicles.items():
             vehicle.state = htl.states.REMOVE
@@ -178,7 +147,7 @@ class Application:
         """URL pointing to HSL Live data for the current bounding box."""
         # http://developer.reittiopas.fi/pages/en/other-apis.php
         return ("http://83.145.232.209:10001/?type=vehicles"
-                "&lng1={:.6f}&lat1={:.6f}&lng2={:.6f}&lat2={:.6f}"
+                "&lng1={:.5f}&lat1={:.5f}&lng2={:.5f}&lat2={:.5f}"
                 .format(self.bbox.xmin,
                         self.bbox.ymin,
                         self.bbox.xmax,
