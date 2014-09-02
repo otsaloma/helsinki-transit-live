@@ -15,12 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Show real-time locations of HSL public transportation vehicles.
-
-http://developer.reittiopas.fi/pages/en/other-apis.php
-http://transport.wspgroup.fi/hklkartta/
-"""
+"""Show real-time locations of HSL public transportation vehicles."""
 
 __version__ = "0.7"
 
@@ -40,9 +35,10 @@ except ImportError:
 import collections
 states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
 
+from htl import util
+from htl import http
 from htl.bbox import *
 from htl.vehicle import *
-from htl import http
 from htl.application import *
 
 def main():

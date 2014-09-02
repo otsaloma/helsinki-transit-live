@@ -15,7 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Show real-time locations of HSL public transportation vehicles."""
+"""
+Show real-time locations of HSL public transportation vehicles.
+
+http://developer.reittiopas.fi/pages/en/other-apis.php
+http://transport.wspgroup.fi/hklkartta/
+"""
 
 import htl
 import pyotherside
@@ -35,7 +40,6 @@ class Application:
         """Initialize an :class:`Application` instance."""
         self.bbox = htl.BBox(0,0,0,0)
         self._event_queue = queue.Queue()
-        self._headers = None
         self.interval = interval
         self._timestamp = int(time.time()*1000)
         self.vehicles = {}
@@ -74,7 +78,7 @@ class Application:
 
     def _update(self, timestamp):
         """Start infinite periodic updates."""
-        while timestamp == self._timestamp:
+        while self._timestamp == timestamp:
             pyotherside.send("send-bbox")
             time.sleep(self.interval/2)
             if self.bbox.area > 0:
@@ -100,7 +104,6 @@ class Application:
                 print("Failed to parse line: {}"
                       .format(repr(line)),
                       file=sys.stderr)
-
                 continue
             try:
                 vehicle = self.vehicles[id]
@@ -145,7 +148,6 @@ class Application:
     @property
     def _url(self):
         """URL pointing to HSL Live data for the current bounding box."""
-        # http://developer.reittiopas.fi/pages/en/other-apis.php
         return ("http://83.145.232.209:10001/?type=vehicles"
                 "&lng1={:.5f}&lat1={:.5f}&lng2={:.5f}&lat2={:.5f}"
                 .format(self.bbox.xmin,

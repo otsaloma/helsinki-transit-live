@@ -30,10 +30,9 @@ HEADERS = {"Connection": "Keep-Alive",
 
 def _get_connection(url, timeout=None):
     """Return HTTP connection to `url`."""
-    try:
+    with htl.util.silent(KeyError):
         return _connections[_get_key(url)]
-    except KeyError:
-        return _new_connection(url, timeout)
+    return _new_connection(url, timeout)
 
 def _get_connection_class(url):
     """Return HTTP connection class for `url`."""
@@ -60,11 +59,8 @@ def _new_connection(url, timeout=None):
 
 def _remove_connection(url):
     """Close and remove connection to `url` from the pool."""
-    try:
-        httpc = _connections.pop(_get_key(url))
-        httpc.close()
-    except Exception:
-        pass
+    with htl.util.silent(Exception):
+        _connections.pop(_get_key(url)).close()
 
 def request_url(url, encoding=None, retry=1):
     """
@@ -74,6 +70,7 @@ def request_url(url, encoding=None, retry=1):
     to text using `encoding`. Try again `retry` times in some particular
     cases that imply a connection error.
     """
+    print("Requesting {}".format(url))
     try:
         httpc = _get_connection(url)
         httpc.request("GET", url, headers=HEADERS)
@@ -95,5 +92,4 @@ def request_url(url, encoding=None, retry=1):
         print("Failed to download data: {}: {}"
               .format(error.__class__.__name__, str(error)),
               file=sys.stderr)
-
         raise # Exception
