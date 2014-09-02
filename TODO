@@ -3,6 +3,7 @@ Helsinki Transit Live 0.8
 
  [X] Download data at a buffer outside screen to avoid having
      to wait for an update after minor panning
+ [ ] Add a proper cover?
  [X] Fix icon shapes
 
 Helsinki Transit Live 1.0
