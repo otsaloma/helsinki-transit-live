@@ -20,7 +20,24 @@ import QtQuick 2.0
 import QtPositioning 5.0
 
 PositionSource {
-    active: false
+    id: gps
+    active: app.running
     updateInterval: 1000
+    property var coordinatePrev: QtPositioning.coordinate(0, 0)
+    property var initialCenter: QtPositioning.coordinate(60.169, 24.941)
     property var initTime: Date.now()
+    onPositionChanged: {
+        // Do initial centering on big hops before positioning stabilises.
+        if (!gps.position.coordinate.longitude) return;
+        if (!gps.position.coordinate.latitude) return;
+        if (Date.now() - gps.initTime < 10000 &&
+            gps.coordinatePrev.distanceTo(gps.position.coordinate) > 250) {
+            // Create a new object to trigger a changed signal.
+            var x = gps.position.coordinate.longitude;
+            var y = gps.position.coordinate.latitude;
+            gps.initialCenter = QtPositioning.coordinate(y, x);
+        }
+        gps.coordinatePrev.longitude = gps.position.coordinate.longitude;
+        gps.coordinatePrev.latitude = gps.position.coordinate.latitude;
+    }
 }

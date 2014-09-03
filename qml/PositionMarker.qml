@@ -22,7 +22,7 @@ import QtLocation 5.0
 MapQuickItem {
     anchorPoint.x: image.width/2
     anchorPoint.y: image.height/2
-    coordinate: map.position.coordinate
+    coordinate: gps.position.coordinate
     sourceItem: Image {
         id: image
         source: "icons/position.png"

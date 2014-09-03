@@ -28,17 +28,14 @@ Map {
     focus: true
     gesture.enabled: true
     plugin: MapPlugin {}
-
-    property var  coordinatePrev: QtPositioning.coordinate(0, 0)
-    property var  gps: PositionSource {}
-    property var  position: map.gps.position
-    property var  positionMarker: PositionMarker {}
-    property var  vehicles: []
+    property var positionMarker: PositionMarker {}
+    property var vehicles: []
     property real zoomLevelPrev: 8
 
     Component.onCompleted: {
+        map.centerOnPosition();
+        gps.onInitialCenterChanged.connect(map.centerOnPosition);
         map.setZoomLevel(15);
-        map.gps.start();
     }
 
     gesture.onPinchFinished: {
@@ -60,19 +57,6 @@ Map {
         (event.key == Qt.Key_Minus) && map.setZoomLevel(map.zoomLevel-1);
     }
 
-    onPositionChanged: {
-        // Do initial centering on big hops before positioning stabilises.
-        if (!map.position.coordinate.longitude) return;
-        if (!map.position.coordinate.latitude) return;
-        if (Date.now() - map.gps.initTime < 10000 &&
-            map.coordinatePrev.distanceTo(gps.position.coordinate) > 250) {
-            map.center.longitude = map.position.coordinate.longitude;
-            map.center.latitude = map.position.coordinate.latitude;
-        }
-        map.coordinatePrev.longitude = map.position.coordinate.longitude;
-        map.coordinatePrev.latitude = map.position.coordinate.latitude;
-    }
-
     function addVehicle(id, x, y, bearing, type, line, color) {
         // Add a marker to the map for a new vehicle.
         var component = Qt.createComponent("Vehicle.qml");
@@ -85,6 +69,12 @@ Map {
         item.color = color;
         map.vehicles.push(item);
         map.addMapItem(item);
+    }
+
+    function centerOnPosition() {
+        // Center map on current position.
+        map.center.longitude = gps.position.coordinate.longitude;
+        map.center.latitude = gps.position.coordinate.latitude;
     }
 
     function removeVehicle(id) {
@@ -108,30 +98,16 @@ Map {
                     nw.latitude  + (nw.latitude  - se.latitude)];
 
         py.call("htl.app.set_bbox", bbox, null);
-    }
-
-    function setZoomLevel(zoom) {
-        // Set the current zoom level.
-        map.zoomLevel = zoom;
-        map.zoomLevelPrev = zoom;
-    }
-
-    function start() {
-        // Start periodic vehicle and GPS updates.
-        if (py.ready)
-            py.call("htl.app.start", [], null);
-        map.gps.start();
         // For some reason we need to do something to trigger a redraw
         // to avoid only a part of tiles being displayed at start.
         map.pan(1, -1);
         map.pan(-1, 1);
     }
 
-    function stop() {
-        // Stop periodic vehicle and GPS updates.
-        if (py.ready)
-            py.call("htl.app.stop", [], null);
-        map.gps.stop();
+    function setZoomLevel(zoom) {
+        // Set the current zoom level.
+        map.zoomLevel = zoom;
+        map.zoomLevelPrev = zoom;
     }
 
     function updateVehicle(id, x, y, bearing, line) {

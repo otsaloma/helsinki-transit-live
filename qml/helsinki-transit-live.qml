@@ -21,6 +21,7 @@ import Sailfish.Silica 1.0
 import "."
 
 ApplicationWindow {
+    id: app
     allowedOrientations: Orientation.All
     cover: undefined
     initialPage: Page {
@@ -30,6 +31,9 @@ ApplicationWindow {
         allowedOrientations: Orientation.Portrait
         Map { id: map }
     }
+    // TODO: Add cover.status when we have a cover.
+    property bool running: applicationActive
+    PositionSource { id: gps }
     Python { id: py }
     Component.onCompleted: {
         py.setHandler("add-vehicle", map.addVehicle);
@@ -37,7 +41,11 @@ ApplicationWindow {
         py.setHandler("send-bbox", map.sendBBox);
         py.setHandler("update-vehicle", map.updateVehicle);
     }
-    onApplicationActiveChanged: {
-        applicationActive ? map.start() : map.stop();
+    onRunningChanged: {
+        if (app.running && py.ready) {
+            py.call("htl.app.start", [], null);
+        } else if (!app.running && py.ready) {
+            py.call("htl.app.stop", [], null);
+        }
     }
 }
