@@ -105,41 +105,20 @@ class Application:
                       .format(repr(line)),
                       file=sys.stderr)
                 continue
-            try:
-                vehicle = self.vehicles[id]
-                vehicle.state = htl.states.UPDATE
-            except KeyError:
-                # A new vehicle has entered the bounding box.
+            if not id in self.vehicles:
                 self.vehicles[id] = htl.Vehicle(id=id, route=route)
-                vehicle = self.vehicles[id]
-                vehicle.state = htl.states.ADD
+            vehicle = self.vehicles[id]
             vehicle.route = route
             vehicle.x = x
             vehicle.y = y
             vehicle.bearing = bearing
+            vehicle.state = htl.states.UPDATE
 
     def _update_map(self):
         """Update vehicle markers."""
         for id, vehicle in list(self.vehicles.items()):
-            if vehicle.state == htl.states.ADD:
-                pyotherside.send("add-vehicle",
-                                 vehicle.id,
-                                 vehicle.x,
-                                 vehicle.y,
-                                 vehicle.bearing,
-                                 vehicle.type,
-                                 vehicle.line,
-                                 vehicle.color)
-
-                vehicle.state = htl.states.OK
             if vehicle.state == htl.states.UPDATE:
-                pyotherside.send("update-vehicle",
-                                 vehicle.id,
-                                 vehicle.x,
-                                 vehicle.y,
-                                 vehicle.bearing,
-                                 vehicle.line)
-
+                pyotherside.send("update-vehicle", vehicle.id, vehicle.props)
                 vehicle.state = htl.states.OK
             if vehicle.state == htl.states.REMOVE:
                 pyotherside.send("remove-vehicle", vehicle.id)

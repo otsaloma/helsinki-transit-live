@@ -73,6 +73,16 @@ class Vehicle:
         return(line)
 
     @property
+    def props(self):
+        """Return a dictionary of vehicle properties."""
+        return dict(x=self.x,
+                    y=self.y,
+                    bearing=self.bearing,
+                    color=self.color,
+                    line=self.line,
+                    type=self.type)
+
+    @property
     def type(self):
         """Return vehicle type guessed from `id` and `line`."""
         if self.id.startswith("metro"):

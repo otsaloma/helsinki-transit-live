@@ -32,6 +32,19 @@ Map {
     property var vehicles: []
     property real zoomLevelPrev: 8
 
+    Timer {
+        interval: 1000
+        repeat: true
+        running: app.running
+        triggeredOnStart: true
+        onTriggered: {
+            // XXX: For some reason we need to do something to trigger
+            // a redraw to avoid only a part of tiles being displayed.
+            map.pan(1, -1);
+            map.pan(-1, 1);
+        }
+    }
+
     Component.onCompleted: {
         map.centerOnPosition();
         gps.onInitialCenterChanged.connect(map.centerOnPosition);
@@ -57,16 +70,16 @@ Map {
         (event.key == Qt.Key_Minus) && map.setZoomLevel(map.zoomLevel-1);
     }
 
-    function addVehicle(id, x, y, bearing, type, line, color) {
+    function addVehicle(id, props) {
         // Add a marker to the map for a new vehicle.
         var component = Qt.createComponent("Vehicle.qml");
         var item = component.createObject(map);
         item.vehicleId = id;
-        item.coordinate = QtPositioning.coordinate(y, x);
-        item.bearing = bearing;
-        item.type = type;
-        item.line = line;
-        item.color = color;
+        item.coordinate = QtPositioning.coordinate(props.y, props.x);
+        item.bearing = props.bearing;
+        item.type = props.type;
+        item.line = props.line;
+        item.color = props.color;
         map.vehicles.push(item);
         map.addMapItem(item);
     }
@@ -78,30 +91,29 @@ Map {
     }
 
     function removeVehicle(id) {
-        // Remove vehicle markers that match id.
+        // Remove vehicle marker that matches id.
         for (var i = map.vehicles.length-1; i >= 0; i--) {
             if (map.vehicles[i].vehicleId != id) continue;
             map.removeMapItem(map.vehicles[i]);
             map.vehicles.splice(i, 1);
+            return;
         }
     }
 
     function sendBBox() {
         // Send coordinates of the data download area to the Python backend.
-        // Download data some amount outside screen to allow smooth panning.
+        // Download data at a buffer outside screen to allow smooth panning.
         if (map.width <= 0 || map.height <= 0) return;
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
-        var bbox = [nw.longitude - (se.longitude - nw.longitude),
-                    se.longitude + (se.longitude - nw.longitude),
-                    se.latitude  - (nw.latitude  - se.latitude),
-                    nw.latitude  + (nw.latitude  - se.latitude)];
+        var buffer = Math.min(se.longitude - nw.longitude,
+                              nw.latitude  - se.latitude);
 
-        py.call("htl.app.set_bbox", bbox, null);
-        // For some reason we need to do something to trigger a redraw
-        // to avoid only a part of tiles being displayed at start.
-        map.pan(1, -1);
-        map.pan(-1, 1);
+        var xmin = nw.longitude - buffer;
+        var xmax = se.longitude + buffer;
+        var ymin = se.latitude  - buffer;
+        var ymax = nw.latitude  + buffer;
+        py.call("htl.app.set_bbox", [xmin, xmax, ymin, ymax], null);
     }
 
     function setZoomLevel(zoom) {
@@ -110,14 +122,17 @@ Map {
         map.zoomLevelPrev = zoom;
     }
 
-    function updateVehicle(id, x, y, bearing, line) {
-        // Update location markers of vehicles that match id.
+    function updateVehicle(id, props) {
+        // Update location marker of vehicle that matches id.
         for (var i = 0; i < map.vehicles.length; i++) {
             if (map.vehicles[i].vehicleId != id) continue;
-            map.vehicles[i].coordinate.longitude = x;
-            map.vehicles[i].coordinate.latitude = y;
-            map.vehicles[i].bearing = bearing;
-            map.vehicles[i].line = line;
+            map.vehicles[i].coordinate.longitude = props.x;
+            map.vehicles[i].coordinate.latitude = props.y;
+            map.vehicles[i].bearing = props.bearing;
+            map.vehicles[i].line = props.line;
+            return;
         }
+        // Add missing vehicle.
+        map.addVehicle(id, props);
     }
 }

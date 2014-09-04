@@ -33,7 +33,7 @@ except ImportError:
     sys.modules["pyotherside"] = pyotherside()
 
 import collections
-states = collections.namedtuple("State", "OK ADD REMOVE UPDATE")(1,2,3,4)
+states = collections.namedtuple("State", "OK REMOVE UPDATE")(1,2,3)
 
 from htl import util
 from htl import http

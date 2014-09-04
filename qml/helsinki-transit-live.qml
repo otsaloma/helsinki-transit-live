@@ -23,7 +23,17 @@ import "."
 ApplicationWindow {
     id: app
     allowedOrientations: Orientation.All
-    cover: undefined
+    cover: Cover {
+        id: cover
+        Map { id: coverMap }
+        onStatusChanged: {
+            if (cover.status == Cover.Activating) {
+                coverMap.center.longitude = map.center.longitude;
+                coverMap.center.latitude = map.center.latitude;
+                coverMap.zoomLevel = map.zoomLevel - 1;
+            }
+        }
+    }
     initialPage: Page {
         id: page
         // XXX: Map gestures don't work right in landscape.
@@ -31,15 +41,13 @@ ApplicationWindow {
         allowedOrientations: Orientation.Portrait
         Map { id: map }
     }
-    // TODO: Add cover.status when we have a cover.
-    property bool running: applicationActive
+    property bool running: applicationActive || cover.status == Cover.Active
     PositionSource { id: gps }
     Python { id: py }
     Component.onCompleted: {
-        py.setHandler("add-vehicle", map.addVehicle);
-        py.setHandler("remove-vehicle", map.removeVehicle);
+        py.setHandler("remove-vehicle", app.removeVehicle);
         py.setHandler("send-bbox", map.sendBBox);
-        py.setHandler("update-vehicle", map.updateVehicle);
+        py.setHandler("update-vehicle", app.updateVehicle);
     }
     onRunningChanged: {
         if (app.running && py.ready) {
@@ -47,5 +55,15 @@ ApplicationWindow {
         } else if (!app.running && py.ready) {
             py.call("htl.app.stop", [], null);
         }
+    }
+    function removeVehicle(id) {
+        // Remove vehicle markers that match id.
+        map.removeVehicle(id);
+        coverMap.removeVehicle(id);
+    }
+    function updateVehicle(id, props) {
+        // Update location markers of vehicles that match id.
+        map.updateVehicle(id, props);
+        coverMap.updateVehicle(id, props);
     }
 }
