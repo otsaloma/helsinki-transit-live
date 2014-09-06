@@ -27,21 +27,27 @@ Map {
     center: QtPositioning.coordinate(60.169, 24.941)
     focus: true
     gesture.enabled: true
+    minimumZoomLevel: 3
     plugin: MapPlugin {}
     property var positionMarker: PositionMarker {}
     property var vehicles: []
     property real zoomLevelPrev: 8
 
     Timer {
+        // XXX: For some reason we need to do something to trigger
+        // a redraw to avoid only a part of tiles being displayed
+        // right at start before any user panning or zooming.
+        id: timer
         interval: 1000
         repeat: true
         running: app.running
         triggeredOnStart: true
+        property var initTime: Date.now()
         onTriggered: {
-            // XXX: For some reason we need to do something to trigger
-            // a redraw to avoid only a part of tiles being displayed.
             map.pan(1, -1);
             map.pan(-1, 1);
+            if (Date.now() - initTime > 10000)
+                timer.running = false;
         }
     }
 

@@ -36,6 +36,8 @@ PositionSource {
             var x = gps.position.coordinate.longitude;
             var y = gps.position.coordinate.latitude;
             gps.initialCenter = QtPositioning.coordinate(y, x);
+        } else if (Date.now() - gps.initTime > 30000) {
+            gps.updateInterval = 3000;
         }
         gps.coordinatePrev.longitude = gps.position.coordinate.longitude;
         gps.coordinatePrev.latitude = gps.position.coordinate.latitude;

@@ -30,7 +30,7 @@ ApplicationWindow {
             if (cover.status == Cover.Activating) {
                 coverMap.center.longitude = map.center.longitude;
                 coverMap.center.latitude = map.center.latitude;
-                coverMap.zoomLevel = map.zoomLevel - 1;
+                coverMap.setZoomLevel(Math.max(3, map.zoomLevel-1));
             }
         }
     }
