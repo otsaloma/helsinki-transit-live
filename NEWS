@@ -1,3 +1,11 @@
+Helsinki Transit Live 0.8
+=========================
+
+ * Add an active mini map cover
+ * Download data at a buffer outside screen to avoid having
+   to wait for an update after minor panning
+ * Fix icon shapes
+
 Helsinki Transit Live 0.7
 =========================
 
