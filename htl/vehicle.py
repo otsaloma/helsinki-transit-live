@@ -41,15 +41,15 @@ class Vehicle:
     def color(self):
         """Return `type`-dependent color for icons and text."""
         if self.type == "train":
-            return "#DA1551"
+            return "#da1551"
         if self.type == "metro":
-            return "#FE631E"
+            return "#fe631e"
         if self.type == "tram":
             return "#169660"
         if self.type == "bus":
-            return "#0A79C7"
+            return "#0a79c7"
         if self.type == "kutsuplus":
-            return "#0A79C7"
+            return "#0a79c7"
         return "#000000"
 
     @property
