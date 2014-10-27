@@ -28,18 +28,17 @@ PositionSource {
     property var initTime: Date.now()
     onPositionChanged: {
         // Do initial centering on big hops before positioning stabilises.
-        if (!gps.position.coordinate.longitude) return;
-        if (!gps.position.coordinate.latitude) return;
+        var coord = gps.position.coordinate;
+        if (!coord.longitude || !coord.latitude) return;
         if (Date.now() - gps.initTime < 10000 &&
-            gps.coordPrev.distanceTo(gps.position.coordinate) > 250) {
+            gps.coordPrev.distanceTo(coord) > 250) {
             // Create a new object to trigger a changed signal.
-            var x = gps.position.coordinate.longitude;
-            var y = gps.position.coordinate.latitude;
-            gps.initialCenter = QtPositioning.coordinate(y, x);
+            gps.initialCenter = QtPositioning.coordinate(
+                coord.latitude, coord.longitude);
         } else if (Date.now() - gps.initTime > 30000) {
             gps.updateInterval = 3000;
         }
-        gps.coordPrev.longitude = gps.position.coordinate.longitude;
-        gps.coordPrev.latitude = gps.position.coordinate.latitude;
+        gps.coordPrev.longitude = coord.longitude;
+        gps.coordPrev.latitude = coord.latitude;
     }
 }
