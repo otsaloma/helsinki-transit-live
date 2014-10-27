@@ -44,16 +44,29 @@ Map {
         triggeredOnStart: true
         property var initTime: Date.now()
         onTriggered: {
-            map.pan(1, -1);
-            map.pan(-1, 1);
+            map.pan(+1, -1);
+            map.pan(-1, +1);
             if (Date.now() - initTime > 10000)
                 timer.running = false;
         }
     }
 
     Component.onCompleted: {
+        // Use a daytime grey street map if available.
+        // Needed properties available since Sailfish OS 1.1.0.38.
+        for (var i = 0; i < map.supportedMapTypes.length; i++) {
+            var type = map.supportedMapTypes[i];
+            if (type.style == MapType.GrayStreetMap
+                && type.mobile == false
+                && type.night  == false) {
+                map.activeMapType = type;
+                break;
+            }
+        }
         map.centerOnPosition();
         gps.onInitialCenterChanged.connect(map.centerOnPosition);
+        // XXX: Must set zoomLevel in onCompleted.
+        // http://bugreports.qt-project.org/browse/QTBUG-40779
         map.setZoomLevel(15);
     }
 
