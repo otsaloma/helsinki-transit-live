@@ -1,3 +1,10 @@
+Helsinki Transit Live 0.9
+=========================
+
+ * Use a grey daytime street map if available (this should work on
+   Sailfish OS 1.1.0.38 "Uitukka" and just fall back on the normal
+   street map in earlier versions)
+
 Helsinki Transit Live 0.8
 =========================
 
