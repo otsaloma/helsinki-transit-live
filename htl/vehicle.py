@@ -70,7 +70,7 @@ class Vehicle:
                 line = "M"
             if line == "2":
                 line = "V"
-        return(line)
+        return line.upper()
 
     @property
     def props(self):
