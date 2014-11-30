@@ -7,7 +7,7 @@ Releasing a New Version
    - htl/__init__.py
    - rpm/*.spec
    - Makefile
- * Update NEWS.md and TODO
+ * Update NEWS.md and TODO.md
  * Build tarball and RPM
    - `make dist`
    - `make rpm`
