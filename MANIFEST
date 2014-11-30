@@ -2,11 +2,11 @@ data
 htl
 qml
 rpm
-AUTHORS
+AUTHORS.md
 COPYING
 Makefile
 MANIFEST
 NEWS.md
 README.md
-RELEASING
-TODO
+RELEASING.md
+TODO.md
