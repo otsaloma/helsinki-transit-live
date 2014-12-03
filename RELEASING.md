@@ -4,10 +4,10 @@ Releasing a New Version
  * Do final quality checks
    - `pyflakes3 htl`
  * Bump version numbers
-   - htl/__init__.py
-   - rpm/*.spec
-   - Makefile
- * Update NEWS.md and TODO.md
+   - `htl/__init__.py`
+   - `rpm/*.spec`
+   - `Makefile`
+ * Update `NEWS.md` and `TODO.md`
  * Build tarball and RPM
    - `make dist`
    - `make rpm`
