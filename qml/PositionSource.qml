@@ -33,8 +33,7 @@ PositionSource {
         if (Date.now() - gps.initTime < 10000 &&
             gps.coordPrev.distanceTo(coord) > 250) {
             // Create a new object to trigger a changed signal.
-            gps.initialCenter = QtPositioning.coordinate(
-                coord.latitude, coord.longitude);
+            gps.initialCenter = QtPositioning.coordinate(coord.latitude, coord.longitude);
         } else if (Date.now() - gps.initTime > 30000) {
             gps.updateInterval = 3000;
         }

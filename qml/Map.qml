@@ -125,9 +125,7 @@ Map {
         if (map.width <= 0 || map.height <= 0) return;
         var nw = map.toCoordinate(Qt.point(0, 0));
         var se = map.toCoordinate(Qt.point(map.width, map.height));
-        var buffer = Math.min(se.longitude - nw.longitude,
-                              nw.latitude  - se.latitude);
-
+        var buffer = Math.min(se.longitude - nw.longitude, nw.latitude - se.latitude);
         var xmin = nw.longitude - buffer;
         var xmax = se.longitude + buffer;
         var ymin = se.latitude  - buffer;
