@@ -6,4 +6,5 @@ Helsinki Transit Live 0.9.1
 Helsinki Transit Live 1.0
 =========================
 
- * Allow landscape for the map page when gestures work right
+ * Allow landscape for the map page (need to wait for Qt 5.4.1)
+   - <http://bugreports.qt.io/browse/QTBUG-40799>
