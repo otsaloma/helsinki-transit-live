@@ -19,7 +19,7 @@
 Show real-time locations of HSL public transportation vehicles.
 
 http://developer.reittiopas.fi/pages/en/other-apis.php
-http://transport.wspgroup.fi/hklkartta/
+http://live.mattersoft.fi/hklkartta/
 """
 
 import htl

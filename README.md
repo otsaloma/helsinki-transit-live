@@ -7,7 +7,7 @@ transportation vehicles. It uses the [HSL Live API][1] and should
 display data matching the [official web interface][2].
 
  [1]: http://developer.reittiopas.fi/pages/en/other-apis.php
- [2]: http://transport.wspgroup.fi/hklkartta/
+ [2]: http://live.mattersoft.fi/hklkartta/
 
 Helsinki Transit Live is free software released under the GNU General
 Public License (GPL), see the file `COPYING` for details.
