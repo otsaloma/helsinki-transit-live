@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32"
-   height="32"
+   width="36"
+   height="36"
    id="svg1901"
    sodipodi:version="0.32"
    inkscape:version="0.48.5 r10040"
@@ -63,11 +63,11 @@
      inkscape:label="Taso 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1020.3622)">
+     transform="translate(0,-1016.3622)">
     <g
        id="g10914"
        style="fill:#0540ff;fill-opacity:0.5"
-       transform="matrix(0.66666667,0,0,0.66666667,-8e-8,350.7874)">
+       transform="matrix(0.75,0,0,0.75,0,263.09055)">
       <path
          inkscape:connector-curvature="0"
          id="path10143"
