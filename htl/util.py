@@ -18,7 +18,20 @@
 """Miscellaneous helper functions."""
 
 import contextlib
+import functools
 
+
+def locked_method(function):
+    """
+    Decorator for methods to be run thread-safe.
+
+    Requires class to have an instance variable '_lock'.
+    """
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        with args[0]._lock:
+            return function(*args, **kwargs)
+    return wrapper
 
 @contextlib.contextmanager
 def silent(*exceptions):

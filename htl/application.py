@@ -67,17 +67,17 @@ class Application:
         self.bbox.ymax = ymax
 
     def start(self):
-        """Start threaded infinite periodic updates."""
+        """Start threaded periodic updates."""
         self._timestamp = int(time.time()*1000)
         self._event_queue.put((True, self._timestamp))
 
     def stop(self):
-        """Stop threaded infinite periodic updates."""
+        """Stop threaded periodic updates."""
         self._timestamp = int(time.time()*1000)
         self._event_queue.put((False, self._timestamp))
 
     def _update(self, timestamp):
-        """Start infinite periodic updates."""
+        """Start periodic updates."""
         while self._timestamp == timestamp:
             pyotherside.send("send-bbox")
             time.sleep(self.interval/2)

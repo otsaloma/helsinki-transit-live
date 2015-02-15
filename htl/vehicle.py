@@ -66,21 +66,19 @@ class Vehicle:
                 line = line[1:]
         # For metro, "M" and "V" make more sense than "1" and "2".
         if self.id.startswith("metro"):
-            if line == "1":
-                line = "M"
-            if line == "2":
-                line = "V"
+            if line == "1": line = "M"
+            if line == "2": line = "V"
         return line.upper()
 
     @property
     def props(self):
         """Return a dictionary of vehicle properties."""
-        return dict(x=self.x,
-                    y=self.y,
-                    bearing=self.bearing,
+        return dict(bearing=self.bearing,
                     color=self.color,
                     line=self.line,
-                    type=self.type)
+                    type=self.type,
+                    x=self.x,
+                    y=self.y)
 
     @property
     def type(self):
