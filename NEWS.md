@@ -1,3 +1,15 @@
+Helsinki Transit Live 0.10
+==========================
+
+ * Center on position by double-tapping map
+ * Animate vehicle and position changes
+ * Animate centering of map
+ * Make vehicle icons slightly bigger
+ * Destroy dynamically created QML objects when no longer used
+ * Fix application icon rasterization
+ * Bump required QtPositioning version to 5.2 and use the 5.3 API
+   (probably available since Sailfish OS 1.1.0.38 "Uitukka")
+
 Helsinki Transit Live 0.9
 =========================
 
