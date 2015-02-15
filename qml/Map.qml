@@ -56,9 +56,9 @@ Map {
         // Needed properties available since Sailfish OS 1.1.0.38.
         for (var i = 0; i < map.supportedMapTypes.length; i++) {
             var type = map.supportedMapTypes[i];
-            if (type.style == MapType.GrayStreetMap
-                && type.mobile == false
-                && type.night  == false) {
+            if (type.style  == MapType.GrayStreetMap &&
+                type.mobile == false &&
+                type.night  == false) {
                 map.activeMapType = type;
                 break;
             }
@@ -85,7 +85,7 @@ Map {
 
     Keys.onPressed: {
         // Allow zooming with plus and minus keys on the emulator.
-        (event.key == Qt.Key_Plus) && map.setZoomLevel(map.zoomLevel+1);
+        (event.key == Qt.Key_Plus)  && map.setZoomLevel(map.zoomLevel+1);
         (event.key == Qt.Key_Minus) && map.setZoomLevel(map.zoomLevel-1);
     }
 
@@ -114,6 +114,7 @@ Map {
         for (var i = map.vehicles.length-1; i >= 0; i--) {
             if (map.vehicles[i].vehicleId != id) continue;
             map.removeMapItem(map.vehicles[i]);
+            map.vehicles[i].destroy()
             map.vehicles.splice(i, 1);
             return;
         }
@@ -140,7 +141,7 @@ Map {
     }
 
     function updateVehicle(id, props) {
-        // Update location marker of vehicle that matches id.
+        // Update vehicle marker that matches id.
         for (var i = 0; i < map.vehicles.length; i++) {
             if (map.vehicles[i].vehicleId != id) continue;
             map.vehicles[i].coordinate.longitude = props.x;

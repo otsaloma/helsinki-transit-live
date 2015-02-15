@@ -25,6 +25,7 @@ ApplicationWindow {
     allowedOrientations: Orientation.All
     cover: Cover {
         id: cover
+        property bool active: status == Cover.Active
         Map { id: coverMap }
         onStatusChanged: {
             if (cover.status == Cover.Activating) {
@@ -41,7 +42,7 @@ ApplicationWindow {
         allowedOrientations: Orientation.Portrait
         Map { id: map }
     }
-    property bool running: applicationActive || cover.status == Cover.Active
+    property bool running: applicationActive || cover.active
     PositionSource { id: gps }
     Python { id: py }
     Component.onCompleted: {
@@ -62,7 +63,7 @@ ApplicationWindow {
         coverMap.removeVehicle(id);
     }
     function updateVehicle(id, props) {
-        // Update location markers of vehicles that match id.
+        // Update vechile markers that match id.
         map.updateVehicle(id, props);
         coverMap.updateVehicle(id, props);
     }
