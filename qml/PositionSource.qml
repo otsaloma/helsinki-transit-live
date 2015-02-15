@@ -17,7 +17,7 @@
  */
 
 import QtQuick 2.0
-import QtPositioning 5.0
+import QtPositioning 5.3
 
 PositionSource {
     id: gps
@@ -32,7 +32,6 @@ PositionSource {
         if (!coord.longitude || !coord.latitude) return;
         if (Date.now() - gps.initTime < 10000 &&
             gps.coordPrev.distanceTo(coord) > 250) {
-            // Create a new object to trigger a changed signal.
             gps.initialCenter = QtPositioning.coordinate(
                 coord.latitude, coord.longitude);
         } else if (Date.now() - gps.initTime > 30000) {

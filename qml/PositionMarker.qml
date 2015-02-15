@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import QtLocation 5.0
+import QtPositioning 5.3
 
 MapQuickItem {
     anchorPoint.x: image.width/2
@@ -26,5 +27,11 @@ MapQuickItem {
     sourceItem: Image {
         id: image
         source: "icons/position.png"
+    }
+    Behavior on coordinate {
+        CoordinateAnimation {
+            duration: 500
+            easing.type: Easing.Linear
+        }
     }
 }

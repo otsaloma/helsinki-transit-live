@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import QtPositioning 5.3
 import "."
 
 ApplicationWindow {
@@ -29,8 +30,8 @@ ApplicationWindow {
         Map { id: coverMap }
         onStatusChanged: {
             if (cover.status == Cover.Activating) {
-                coverMap.center.longitude = map.center.longitude;
-                coverMap.center.latitude = map.center.latitude;
+                coverMap.center = QtPositioning.coordinate(
+                    map.center.latitude, map.center.longitude);
                 coverMap.setZoomLevel(Math.max(3, map.zoomLevel-1));
             }
         }

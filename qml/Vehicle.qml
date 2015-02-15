@@ -18,6 +18,7 @@
 
 import QtQuick 2.0
 import QtLocation 5.0
+import QtPositioning 5.3
 
 MapQuickItem {
     id: vehicle
@@ -52,4 +53,10 @@ MapQuickItem {
     property string line: ""
     property string type: "unknown"
     property string vehicleId: ""
+    Behavior on coordinate {
+        CoordinateAnimation {
+            duration: 500
+            easing.type: Easing.Linear
+        }
+    }
 }

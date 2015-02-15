@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import QtLocation 5.0
-import QtPositioning 5.0
+import QtPositioning 5.3
 import "."
 
 Map {
@@ -32,6 +32,13 @@ Map {
     property var positionMarker: PositionMarker {}
     property var vehicles: []
     property real zoomLevelPrev: 8
+
+    Behavior on center {
+        CoordinateAnimation {
+            duration: 500
+            easing.type: Easing.InOutQuad
+        }
+    }
 
     Timer {
         // XXX: For some reason we need to do something to trigger
@@ -49,6 +56,11 @@ Map {
             if (Date.now() - initTime > 10000)
                 timer.running = false;
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onDoubleClicked: map.centerOnPosition();
     }
 
     Component.onCompleted: {
@@ -105,8 +117,10 @@ Map {
 
     function centerOnPosition() {
         // Center map on current position.
-        map.center.longitude = gps.position.coordinate.longitude;
-        map.center.latitude = gps.position.coordinate.latitude;
+        map.center = QtPositioning.coordinate(
+            gps.position.coordinate.latitude,
+            gps.position.coordinate.longitude);
+
     }
 
     function removeVehicle(id) {
@@ -114,7 +128,7 @@ Map {
         for (var i = map.vehicles.length-1; i >= 0; i--) {
             if (map.vehicles[i].vehicleId != id) continue;
             map.removeMapItem(map.vehicles[i]);
-            map.vehicles[i].destroy()
+            map.vehicles[i].destroy();
             map.vehicles.splice(i, 1);
             return;
         }
@@ -144,8 +158,7 @@ Map {
         // Update vehicle marker that matches id.
         for (var i = 0; i < map.vehicles.length; i++) {
             if (map.vehicles[i].vehicleId != id) continue;
-            map.vehicles[i].coordinate.longitude = props.x;
-            map.vehicles[i].coordinate.latitude = props.y;
+            map.vehicles[i].coordinate = QtPositioning.coordinate(props.y, props.x);
             map.vehicles[i].bearing = props.bearing;
             map.vehicles[i].line = props.line;
             return;
