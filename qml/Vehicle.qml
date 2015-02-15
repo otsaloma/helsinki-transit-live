@@ -53,6 +53,13 @@ MapQuickItem {
     property string line: ""
     property string type: "unknown"
     property string vehicleId: ""
+    Behavior on bearing {
+        RotationAnimation {
+            direction: RotationAnimation.Shortest
+            duration: 500
+            easing.type: Easing.Linear
+        }
+    }
     Behavior on coordinate {
         CoordinateAnimation {
             duration: 500
