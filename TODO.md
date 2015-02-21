@@ -1,3 +1,8 @@
+Helsinki Transit Live 0.10.1
+============================
+
+ * [X] Bump vehicle animation length to 1.5 seconds
+
 Helsinki Transit Live 1.0
 =========================
 
