@@ -1,3 +1,10 @@
+Helsinki Transit Live 0.10.1
+============================
+
+ * [X] Don't install %doc files (COPYING, README, etc.)
+ * [X] Remove python3-base from RPM dependencies
+ * [X] Prevent provides in RPM package
+
 Helsinki Transit Live 1.0
 =========================
 
