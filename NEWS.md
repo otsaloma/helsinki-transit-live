@@ -1,3 +1,12 @@
+Helsinki Transit Live 1.0
+=========================
+
+ * Allow landscape orientation (requires Sailfish OS 1.1.4
+   "Äijänpäivänjärvi" to work correctly)
+ * Don't install %doc files (COPYING, README, etc.)
+ * Remove python3-base from RPM dependencies
+ * Prevent provides in RPM package
+
 Helsinki Transit Live 0.10
 ==========================
 
