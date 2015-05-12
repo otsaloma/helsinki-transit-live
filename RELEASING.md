@@ -3,6 +3,7 @@ Releasing a New Version
 
  * Do final quality checks
    - `pyflakes3 htl`
+   - `py.test-3 htl`
  * Bump version numbers
    - `htl/__init__.py`
    - `rpm/*.spec`

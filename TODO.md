@@ -1,3 +1,10 @@
+Helsinki Transit Live 1.0.1
+===========================
+
+ * [X] Fix error resetting HTTP connection
+ * [X] Ensure that blocking HTTP connection pool operations terminate
+       immediately and gracefully on application exit
+
 Helsinki Transit Live 2.0
 =========================
 

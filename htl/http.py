@@ -19,6 +19,7 @@
 
 import htl
 import http.client
+import json
 import queue
 import sys
 import threading
@@ -34,6 +35,7 @@ class ConnectionPool:
 
     def __init__(self, threads):
         """Initialize a :class:`ConnectionPool` instance."""
+        self._alive = True
         self._lock = threading.Lock()
         self._queue = {}
         self._threads = threads
@@ -43,7 +45,7 @@ class ConnectionPool:
         """Initialize a queue of HTTP connections to `url`."""
         key = self._get_key(url)
         if key in self._queue: return
-        self._queue[key] = queue.Queue()
+        self._queue[key] = queue.LifoQueue()
         for i in range(self._threads):
             self._queue[key].put(None)
 
@@ -52,7 +54,14 @@ class ConnectionPool:
         key = self._get_key(url)
         if not key in self._queue:
             self._allocate(url)
-        connection = self._queue[key].get()
+        while True:
+            # Make sure no Queue.get call is left blocking
+            # once the connection pool has been terminated.
+            if not self._alive:
+                raise Exception("Pool terminated, get aborted")
+            with htl.util.silent(queue.Empty):
+                connection = self._queue[key].get(timeout=1)
+                break
         if connection is None:
             connection = self._new(url)
         return connection
@@ -60,7 +69,11 @@ class ConnectionPool:
     def _get_key(self, url):
         """Return a dictionary key for the host of `url`."""
         components = urllib.parse.urlparse(url)
-        return "{}://{}".format(components.scheme, components.netloc)
+        return "{}:{}".format(components.scheme, components.netloc)
+
+    def is_alive(self):
+        """Return ``True`` if pool is in use."""
+        return self._alive
 
     def _new(self, url):
         """Initialize and return a new HTTP connection to `url`."""
@@ -83,11 +96,45 @@ class ConnectionPool:
         connection = self.get(url)
         with htl.util.silent(Exception):
             connection.close()
-        self.put(None)
+        self.put(url, None)
+
+    @htl.util.locked_method
+    def terminate(self):
+        """Close all connections and terminate."""
+        for key in self._queue:
+            with htl.util.silent(queue.Empty):
+                while True:
+                    connection = self._queue[key].get(block=False)
+                    with htl.util.silent(Exception):
+                        connection.close()
+        # Mark as dead so that subsequent operations fail.
+        self._alive = False
 
 
 pool = ConnectionPool(1)
 
+
+def request_json(url, encoding="utf_8", retry=1):
+    """
+    Request, parse and return JSON data at `url`.
+
+    Try again `retry` times in some particular cases that imply
+    a connection error.
+    """
+    text = request_url(url, encoding, retry)
+    if not text.strip() and retry > 0:
+        # A blank return is probably an error.
+        pool.reset(url)
+        text = request_url(url, encoding, retry-1)
+    try:
+        if not text.strip():
+            raise ValueError("Expected JSON, received blank")
+        return json.loads(text)
+    except Exception as error:
+        print("Failed to parse JSON data: {}: {}"
+              .format(error.__class__.__name__, str(error)),
+              file=sys.stderr)
+        raise # Exception
 
 def request_url(url, encoding=None, retry=1):
     """
@@ -112,6 +159,7 @@ def request_url(url, encoding=None, retry=1):
         if encoding is None: return blob
         return blob.decode(encoding, errors="replace")
     except Exception as error:
+        if not pool.is_alive(): raise
         connection.close()
         connection = None
         # These probably mean that the connection was broken.
@@ -122,6 +170,7 @@ def request_url(url, encoding=None, retry=1):
                   file=sys.stderr)
             raise # Exception
     finally:
-        pool.put(url, connection)
+        if pool.is_alive():
+            pool.put(url, connection)
     assert retry > 0
     return request_url(url, encoding, retry-1)
