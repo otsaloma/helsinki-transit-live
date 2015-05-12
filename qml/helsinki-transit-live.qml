@@ -49,6 +49,9 @@ ApplicationWindow {
         py.setHandler("send-bbox", map.sendBBox);
         py.setHandler("update-vehicle", app.updateVehicle);
     }
+    Component.onDestruction: {
+        py.ready && py.call_sync("htl.app.quit", []);
+    }
     onRunningChanged: {
         if (app.running && py.ready) {
             py.call("htl.app.start", [], null);

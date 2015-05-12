@@ -59,6 +59,10 @@ class Application:
                 self._update(timestamp)
             self._event_queue.task_done()
 
+    def quit(self):
+        """Quit the application."""
+        htl.http.pool.terminate()
+
     def set_bbox(self, xmin, xmax, ymin, ymax):
         """Set coordinates of the bounding box."""
         self.bbox.xmin = xmin
