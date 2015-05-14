@@ -21,8 +21,11 @@ Requires: qt5-qtdeclarative-import-positioning >= 5.2
 Requires: sailfishsilica-qt5
 
 %description
-Real-time locations of Helsinki Region Transport (HSL) public transportation
-vehicles.
+View buses, trams, trains and metro moving in real-time on a map.
+
+Included are a part of Helsinki Region Transport (HSL) public transportation
+vehicles (currently trams, metro and kutsuplus). Positions of vehicles are from
+the HSL Live API and based on GPS-positioning.
 
 %prep
 %setup -q
