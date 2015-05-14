@@ -4,7 +4,7 @@ Helsinki Transit Live 1.0.1
  * [X] Fix error resetting HTTP connection
  * [X] Ensure that blocking HTTP connection pool operations terminate
        immediately and gracefully on application exit
- * [ ] Don't allow inverted portait orientation
+ * [X] Don't allow inverted portait orientation
 
 Helsinki Transit Live 2.0
 =========================
