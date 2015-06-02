@@ -22,7 +22,6 @@ import QtPositioning 5.3
 PositionSource {
     id: gps
     active: app.running
-    updateInterval: 1000
     property var coordPrev: QtPositioning.coordinate(0, 0)
     property var initialCenter: QtPositioning.coordinate(60.169, 24.941)
     property var initTime: Date.now()
@@ -34,8 +33,6 @@ PositionSource {
             gps.coordPrev.distanceTo(coord) > 250) {
             gps.initialCenter = QtPositioning.coordinate(
                 coord.latitude, coord.longitude);
-        } else if (Date.now() - gps.initTime > 30000) {
-            gps.updateInterval = 3000;
         }
         gps.coordPrev.longitude = coord.longitude;
         gps.coordPrev.latitude = coord.latitude;

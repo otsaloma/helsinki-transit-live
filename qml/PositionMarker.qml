@@ -21,11 +21,10 @@ import QtLocation 5.0
 import QtPositioning 5.3
 
 MapQuickItem {
-    anchorPoint.x: image.width/2
-    anchorPoint.y: image.height/2
+    anchorPoint.x: sourceItem.width/2
+    anchorPoint.y: sourceItem.height/2
     coordinate: gps.position.coordinate
     sourceItem: Image {
-        id: image
         source: "icons/position.png"
     }
     Behavior on coordinate {
