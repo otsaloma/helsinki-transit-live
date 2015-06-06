@@ -23,7 +23,7 @@ import "."
 
 ApplicationWindow {
     id: app
-    allowedOrientations: ~Orientation.PortraitInverted
+    allowedOrientations: defaultAllowedOrientations
     cover: Cover {
         id: cover
         property bool active: status == Cover.Active
@@ -38,7 +38,7 @@ ApplicationWindow {
     }
     initialPage: Page {
         id: page
-        allowedOrientations: ~Orientation.PortraitInverted
+        allowedOrientations: app.defaultAllowedOrientations
         Map { id: map }
     }
     property bool running: applicationActive || cover.active
