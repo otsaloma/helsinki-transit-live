@@ -1,12 +1,3 @@
-Helsinki Transit Live 1.0.1
-===========================
-
-* [X] Allow all default orientations (all on a tablet and all except
-      inverted portrait on a phone)
-* [X] Fix error resetting HTTP connection
-* [X] Ensure that blocking HTTP connection pool operations terminate
-      immediately and gracefully on application exit
-
 Helsinki Transit Live 2.0
 =========================
 
