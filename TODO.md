@@ -1,8 +1,3 @@
-Helsinki Transit Live 1.1
-=========================
-
-* [X] Use a mobile map, i.e. larger font in text labels
-
 Helsinki Transit Live 2.0
 =========================
 
