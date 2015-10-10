@@ -28,7 +28,7 @@ MapQuickItem {
         Image {
             id: image
             rotation: vehicle.bearing
-            source: "icons/" + vehicle.type + ".png"
+            source: "icons/%1.png".arg(vehicle.type)
         }
         Rectangle {
             id: rectangle

@@ -53,8 +53,7 @@ Map {
         onTriggered: {
             map.pan(+1, -1);
             map.pan(-1, +1);
-            if (Date.now() - initTime > 10000)
-                timer.running = false;
+            timer.running = Date.now() - timer.initTime < 10000;
         }
     }
 
@@ -64,13 +63,13 @@ Map {
     }
 
     Component.onCompleted: {
-        // Use a daytime grey street map if available.
+        // Use a daytime gray street map if available.
         // Needed properties available since Sailfish OS 1.1.0.38.
         for (var i = 0; i < map.supportedMapTypes.length; i++) {
             var type = map.supportedMapTypes[i];
-            if (type.style  == MapType.GrayStreetMap &&
-                type.mobile == false &&
-                type.night  == false) {
+            if (type.style  === MapType.GrayStreetMap &&
+                type.mobile === true &&
+                type.night  === false) {
                 map.activeMapType = type;
                 break;
             }
@@ -97,8 +96,8 @@ Map {
 
     Keys.onPressed: {
         // Allow zooming with plus and minus keys on the emulator.
-        (event.key == Qt.Key_Plus)  && map.setZoomLevel(map.zoomLevel+1);
-        (event.key == Qt.Key_Minus) && map.setZoomLevel(map.zoomLevel-1);
+        (event.key === Qt.Key_Plus)  && map.setZoomLevel(map.zoomLevel+1);
+        (event.key === Qt.Key_Minus) && map.setZoomLevel(map.zoomLevel-1);
     }
 
     function addVehicle(id, props) {
@@ -126,7 +125,7 @@ Map {
     function removeVehicle(id) {
         // Remove vehicle marker that matches id.
         for (var i = map.vehicles.length-1; i >= 0; i--) {
-            if (map.vehicles[i].vehicleId != id) continue;
+            if (map.vehicles[i].vehicleId !== id) continue;
             map.removeMapItem(map.vehicles[i]);
             map.vehicles[i].destroy();
             map.vehicles.splice(i, 1);
@@ -157,7 +156,7 @@ Map {
     function updateVehicle(id, props) {
         // Update vehicle marker that matches id.
         for (var i = 0; i < map.vehicles.length; i++) {
-            if (map.vehicles[i].vehicleId != id) continue;
+            if (map.vehicles[i].vehicleId !== id) continue;
             map.vehicles[i].coordinate = QtPositioning.coordinate(props.y, props.x);
             map.vehicles[i].bearing = props.bearing;
             map.vehicles[i].line = props.line;

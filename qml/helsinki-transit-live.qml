@@ -26,10 +26,10 @@ ApplicationWindow {
     allowedOrientations: defaultAllowedOrientations
     cover: Cover {
         id: cover
-        property bool active: status == Cover.Active
+        property bool active: status === Cover.Active
         Map { id: coverMap }
         onStatusChanged: {
-            if (cover.status == Cover.Activating) {
+            if (cover.status === Cover.Activating) {
                 coverMap.center = QtPositioning.coordinate(
                     map.center.latitude, map.center.longitude);
                 coverMap.setZoomLevel(Math.max(3, map.zoomLevel-1));
@@ -53,11 +53,10 @@ ApplicationWindow {
         py.ready && py.call_sync("htl.app.quit", []);
     }
     onRunningChanged: {
-        if (app.running && py.ready) {
-            py.call("htl.app.start", [], null);
-        } else if (!app.running && py.ready) {
+        if (!py.ready) return;
+        app.running ?
+            py.call("htl.app.start", [], null) :
             py.call("htl.app.stop", [], null);
-        }
     }
     function removeVehicle(id) {
         // Remove vehicle markers that match id.
