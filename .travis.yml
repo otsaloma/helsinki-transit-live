@@ -2,9 +2,11 @@ language: python
 python:
   - 3.4
   - 3.5
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y rpm
 script:
   - make clean
   - make dist
-  - make install
   - make rpm
   - make test
