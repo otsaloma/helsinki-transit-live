@@ -1,3 +1,8 @@
+Helsinki Transit Live 1.2
+=========================
+
+[X] Add new application icon sizes for tablet and whatever else
+
 Helsinki Transit Live 2.0
 =========================
 
