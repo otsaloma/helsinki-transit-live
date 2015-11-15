@@ -78,7 +78,7 @@ Map {
         gps.onInitialCenterChanged.connect(map.centerOnPosition);
         // XXX: Must set zoomLevel in onCompleted.
         // http://bugreports.qt-project.org/browse/QTBUG-40779
-        map.setZoomLevel(15);
+        map.setZoomLevel(14);
     }
 
     gesture.onPinchFinished: {
