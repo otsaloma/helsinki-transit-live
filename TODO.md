@@ -1,9 +1,3 @@
-Helsinki Transit Live 1.2
-=========================
-
-* [X] Add new application icon sizes for tablet and whatever else
-* [X] Default to zoom level 14 (one further out than before)
-
 Helsinki Transit Live 2.0
 =========================
 
