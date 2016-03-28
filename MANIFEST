@@ -1,7 +1,9 @@
 data
 htl
+paho
 qml
 rpm
+trackers
 AUTHORS.md
 COPYING
 Makefile

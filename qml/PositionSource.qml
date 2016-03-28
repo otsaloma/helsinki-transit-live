@@ -30,10 +30,9 @@ PositionSource {
         var coord = gps.position.coordinate;
         if (!coord.longitude || !coord.latitude) return;
         if (Date.now() - gps.initTime < 10000 &&
-            gps.coordPrev.distanceTo(coord) > 250) {
+            gps.coordPrev.distanceTo(coord) > 250)
             gps.initialCenter = QtPositioning.coordinate(
                 coord.latitude, coord.longitude);
-        }
         gps.coordPrev.longitude = coord.longitude;
         gps.coordPrev.latitude = coord.latitude;
     }

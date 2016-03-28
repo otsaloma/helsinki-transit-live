@@ -5,11 +5,11 @@
 %define __provides_exclude_from ^%{_datadir}/.*$
 
 Name: harbour-helsinki-transit-live
-Version: 1.2
+Version: 1.2.999
 Release: 1
-Summary: Real-time locations of HSL public transportation vehicles
+Summary: Real-time locations of HSL public transport vehicles
 License: GPLv3+
-URL: http://github.com/otsaloma/helsinki-transit-live
+URL: https://github.com/otsaloma/helsinki-transit-live
 Source: %{name}-%{version}.tar.xz
 BuildArch: noarch
 BuildRequires: make
@@ -23,9 +23,9 @@ Requires: sailfishsilica-qt5
 %description
 View buses, trams, trains and metro moving in real-time on a map.
 
-Included are a part of Helsinki Region Transport (HSL) public transportation
-vehicles (currently trams, metro and kutsuplus). Positions of vehicles are from
-the HSL Live API and based on GPS-positioning.
+Included are all Helsinki Region Transport (HSL) public transportation vehicles
+which have realtime information available. Positions of vehicles are from the
+Digitransit HSL MQTT API and based on GPS-positioning.
 
 %prep
 %setup -q

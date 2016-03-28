@@ -27,10 +27,12 @@ Map {
     center: QtPositioning.coordinate(60.169, 24.941)
     focus: true
     gesture.enabled: true
-    minimumZoomLevel: 3
+    minimumZoomLevel: 12
     plugin: MapPlugin {}
-    property var positionMarker: PositionMarker {}
-    property var vehicles: []
+
+    property bool changed: true
+    property var  positionMarker: PositionMarker {}
+    property var  vehicles: []
     property real zoomLevelPrev: 8
 
     Behavior on center {
@@ -53,8 +55,15 @@ Map {
         onTriggered: {
             map.pan(+1, -1);
             map.pan(-1, +1);
-            timer.running = Date.now() - timer.initTime < 10000;
+            timer.running = Date.now() - timer.initTime < 5000;
         }
+    }
+
+    Timer {
+        interval: 500
+        repeat: true
+        running: app.running
+        onTriggered: map.changed && map.updateTracker();
     }
 
     MouseArea {
@@ -81,6 +90,12 @@ Map {
         map.setZoomLevel(14);
     }
 
+    onCenterChanged: {
+        // Ensure that vehicle tracking is updated after panning.
+        // This gets fired ridiculously often, so keep simple.
+        map.changed = true;
+    }
+
     gesture.onPinchFinished: {
         // Round piched zoom level to avoid fuzziness.
         if (map.zoomLevel < map.zoomLevelPrev) {
@@ -100,13 +115,13 @@ Map {
         (event.key === Qt.Key_Minus) && map.setZoomLevel(map.zoomLevel-1);
     }
 
-    function addVehicle(id, props) {
+    function addVehicle(props) {
         // Add a marker to the map for a new vehicle.
         var component = Qt.createComponent("Vehicle.qml");
         var item = component.createObject(map);
-        item.vehicleId = id;
+        item.uid = props.id;
         item.coordinate = QtPositioning.coordinate(props.y, props.x);
-        item.bearing = props.bearing;
+        item.bearing = props.bearing || 0;
         item.type = props.type;
         item.line = props.line;
         item.color = props.color;
@@ -125,26 +140,12 @@ Map {
     function removeVehicle(id) {
         // Remove vehicle marker that matches id.
         for (var i = map.vehicles.length-1; i >= 0; i--) {
-            if (map.vehicles[i].vehicleId !== id) continue;
+            if (map.vehicles[i].uid !== id) continue;
             map.removeMapItem(map.vehicles[i]);
             map.vehicles[i].destroy();
             map.vehicles.splice(i, 1);
             return;
         }
-    }
-
-    function sendBBox() {
-        // Send coordinates of the data download area to the Python backend.
-        // Download data at a buffer outside screen to allow smooth panning.
-        if (map.width <= 0 || map.height <= 0) return;
-        var nw = map.toCoordinate(Qt.point(0, 0));
-        var se = map.toCoordinate(Qt.point(map.width, map.height));
-        var buffer = Math.min(se.longitude - nw.longitude, nw.latitude - se.latitude);
-        var xmin = nw.longitude - buffer;
-        var xmax = se.longitude + buffer;
-        var ymin = se.latitude  - buffer;
-        var ymax = nw.latitude  + buffer;
-        py.call("htl.app.set_bbox", [xmin, xmax, ymin, ymax], null);
     }
 
     function setZoomLevel(zoom) {
@@ -153,16 +154,34 @@ Map {
         map.zoomLevelPrev = zoom;
     }
 
-    function updateVehicle(id, props) {
+    function updateTracker() {
+        // Send coordinates of the data download area to the Python backend.
+        if (map.width <= 0 || map.height <= 0) return;
+        var nw = map.toCoordinate(Qt.point(0, 0));
+        var se = map.toCoordinate(Qt.point(map.width, map.height));
+        py.call("htl.app.update_tracker", [{
+            xmin: nw.longitude,
+            xmax: se.longitude,
+            ymin: se.latitude,
+            ymax: nw.latitude
+        }], null);
+        map.changed = false;
+    }
+
+    function updateVehicle(props) {
         // Update vehicle marker that matches id.
         for (var i = 0; i < map.vehicles.length; i++) {
-            if (map.vehicles[i].vehicleId !== id) continue;
-            map.vehicles[i].coordinate = QtPositioning.coordinate(props.y, props.x);
+            if (map.vehicles[i].uid !== props.id) continue;
+            var coord = QtPositioning.coordinate(props.y, props.x);
+            // If bearing missing, calculate based on coordinates.
+            props.bearing = props.bearing ||
+                map.vehicles[i].coordinate.azimuthTo(coord);
+            map.vehicles[i].coordinate = coord;
             map.vehicles[i].bearing = props.bearing;
             map.vehicles[i].line = props.line;
             return;
         }
         // Add missing vehicle.
-        map.addVehicle(id, props);
+        map.addVehicle(props);
     }
 }

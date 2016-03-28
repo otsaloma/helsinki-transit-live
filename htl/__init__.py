@@ -17,7 +17,7 @@
 
 """Show real-time locations of HSL public transportation vehicles."""
 
-__version__ = "1.2"
+__version__ = "1.2.999"
 
 try:
     import pyotherside
@@ -31,17 +31,14 @@ except ImportError:
         def send(*args): pass
     sys.modules["pyotherside"] = pyotherside()
 
-import collections
-states = collections.namedtuple("State", "OK REMOVE UPDATE")(1,2,3)
-
+from htl.paths import *
 from htl import util
 from htl import http
-from htl.bbox import *
-from htl.vehicle import *
+from htl.tracker import *
 from htl.application import *
 
 def main():
     """Initialize application."""
     global app
-    app = Application(interval=3)
+    app = Application()
     app.start()

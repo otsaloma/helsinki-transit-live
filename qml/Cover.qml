@@ -21,28 +21,15 @@ import Sailfish.Silica 1.0
 import QtPositioning 5.3
 import "."
 
-ApplicationWindow {
-    id: app
-    allowedOrientations: defaultAllowedOrientations
-    cover: Cover { id: cover }
-    initialPage: Page {
-        id: page
-        allowedOrientations: app.defaultAllowedOrientations
-        Map { id: map }
-    }
-    property bool running: applicationActive || cover.active
-    PositionSource { id: gps }
-    Python { id: py }
-    Component.onCompleted: {
-        py.setHandler("update-vehicle", map.updateVehicle);
-    }
-    Component.onDestruction: {
-        py.ready && py.call_sync("htl.app.quit", []);
-    }
-    onRunningChanged: {
-        if (!py.ready) return;
-        app.running ?
-            py.call("htl.app.start", [], null) :
-            py.call("htl.app.stop", [], null);
+Cover {
+    id: cover
+    property bool active: status === Cover.Active
+    Map { id: coverMap }
+    onStatusChanged: {
+        if (cover.status === Cover.Activating) {
+            coverMap.center = QtPositioning.coordinate(
+                map.center.latitude, map.center.longitude);
+            coverMap.setZoomLevel(Math.max(3, map.zoomLevel-1));
+        }
     }
 }

@@ -49,20 +49,20 @@ MapQuickItem {
         }
     }
     property double bearing: 0
-    property string color: "#000000"
+    property string color: "#007ac9"
     property string line: ""
-    property string type: "unknown"
-    property string vehicleId: ""
+    property string type: "bus"
+    property string uid: ""
     Behavior on bearing {
         RotationAnimation {
             direction: RotationAnimation.Shortest
-            duration: 500
+            duration: 3000
             easing.type: Easing.Linear
         }
     }
     Behavior on coordinate {
         CoordinateAnimation {
-            duration: 500
+            duration: 3000
             easing.type: Easing.Linear
         }
     }

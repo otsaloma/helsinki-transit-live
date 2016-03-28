@@ -19,6 +19,8 @@
 
 import contextlib
 import functools
+import json
+import sys
 
 
 def locked_method(function):
@@ -33,6 +35,17 @@ def locked_method(function):
             return function(*args, **kwargs)
     return wrapper
 
+def read_json(path):
+    """Read data from JSON file at `path`."""
+    try:
+        with open(path, "r", encoding="utf_8") as f:
+            return json.load(f)
+    except Exception as error:
+        print("Failed to read file {}: {}"
+              .format(repr(path), str(error)),
+              file=sys.stderr)
+        raise # Exception
+
 @contextlib.contextmanager
 def silent(*exceptions):
     """Try to execute body, ignoring `exceptions`."""
@@ -40,3 +53,15 @@ def silent(*exceptions):
         yield
     except exceptions:
         pass
+
+def type_to_color(type):
+    """Return hexadecimal color for type."""
+    # XXX: This should really be up to trackers to define differently,
+    # but must match colors of PNG icons shown in the QML map.
+    if type == "train":
+        return "#8c4799"
+    if type == "metro":
+        return "#ff6319"
+    if type == "tram":
+        return "#00985f"
+    return "#007ac9"

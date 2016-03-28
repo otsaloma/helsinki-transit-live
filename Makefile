@@ -1,7 +1,7 @@
 # -*- coding: us-ascii-unix -*-
 
 NAME       = harbour-helsinki-transit-live
-VERSION    = 1.2
+VERSION    = 1.2.999
 
 DESTDIR    =
 PREFIX     = /usr
@@ -27,11 +27,18 @@ install:
 	@echo "Installing Python files..."
 	mkdir -p $(DATADIR)/htl
 	cp htl/*.py $(DATADIR)/htl
+	mkdir -p $(DATADIR)/paho/mqtt
+	cp paho/*.py $(DATADIR)/paho
+	cp paho/mqtt/*.py $(DATADIR)/paho/mqtt
 	@echo "Installing QML files..."
 	mkdir -p $(DATADIR)/qml/icons
 	cp qml/helsinki-transit-live.qml $(DATADIR)/qml/$(NAME).qml
 	cp qml/[ABCDEFGHIJKLMNOPQRSTUVXYZ]*.qml $(DATADIR)/qml
 	cp qml/icons/*.png $(DATADIR)/qml/icons
+	@echo "Installing trackers..."
+	mkdir -p $(DATADIR)/trackers
+	cp trackers/*.json $(DATADIR)/trackers
+	cp trackers/*.py $(DATADIR)/trackers
 	@echo "Installing desktop file..."
 	mkdir -p $(DESKTOPDIR)
 	cp data/$(NAME).desktop $(DESKTOPDIR)
