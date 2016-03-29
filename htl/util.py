@@ -18,10 +18,69 @@
 """Miscellaneous helper functions."""
 
 import contextlib
+import copy
 import functools
 import json
+import os
+import random
+import shutil
+import socket
+import stat
 import sys
+import traceback
 
+
+def api_query(fallback):
+    """Decorator for API requests with graceful error handling."""
+    def outer_wrapper(function):
+        @functools.wraps(function)
+        def inner_wrapper(*args, **kwargs):
+            try:
+                # function can fail due to connection errors or errors
+                # in parsing the received data. Notify the user of some
+                # common errors by returning a dictionary with the error
+                # message to be displayed. With unexpected errors, print
+                # a traceback and return blank of correct type.
+                return function(*args, **kwargs)
+            except socket.timeout:
+                return dict(error=True, message="Connection timed out")
+            except Exception:
+                traceback.print_exc()
+                return copy.deepcopy(fallback)
+        return inner_wrapper
+    return outer_wrapper
+
+@contextlib.contextmanager
+def atomic_open(path, mode="w", *args, **kwargs):
+    """A context manager for atomically writing a file."""
+    # This is a simplified version of atomic_open from gaupol.
+    # https://github.com/otsaloma/gaupol/blob/master/aeidon/util.py
+    path = os.path.realpath(path)
+    suffix = random.randint(1, 10**9)
+    temp_path = "{}.tmp{}".format(path, suffix)
+    try:
+        if os.path.isfile(path):
+            # If the file exists, use the same permissions.
+            # Note that all other file metadata, including
+            # owner and group, is not preserved.
+            with open(temp_path, "w") as f: pass
+            st = os.stat(path)
+            os.chmod(temp_path, stat.S_IMODE(st.st_mode))
+        with open(temp_path, mode, *args, **kwargs) as f:
+            yield f
+            f.flush()
+            os.fsync(f.fileno())
+        try:
+            # Requires Python 3.3 or later.
+            # Can fail in the unlikely case that
+            # paths are on different filesystems.
+            os.replace(temp_path, path)
+        except OSError:
+            # Fall back on a non-atomic operation.
+            shutil.move(temp_path, path)
+    finally:
+        with silent(Exception):
+            os.remove(temp_path)
 
 def locked_method(function):
     """
@@ -34,6 +93,22 @@ def locked_method(function):
         with args[0]._lock:
             return function(*args, **kwargs)
     return wrapper
+
+def makedirs(directory):
+    """Create and return `directory` or raise :exc:`OSError`."""
+    directory = os.path.abspath(directory)
+    if os.path.isdir(directory):
+        return directory
+    try:
+        os.makedirs(directory)
+    except OSError as error:
+        if os.path.isdir(directory):
+            return directory
+        print("Failed to create directory {}: {}"
+              .format(repr(directory), str(error)),
+              file=sys.stderr)
+        raise # OSError
+    return directory
 
 def read_json(path):
     """Read data from JSON file at `path`."""
@@ -65,3 +140,15 @@ def type_to_color(type):
     if type == "tram":
         return "#00985f"
     return "#007ac9"
+
+def write_json(data, path):
+    """Write `data` to JSON file at `path`."""
+    try:
+        makedirs(os.path.dirname(path))
+        with atomic_open(path, "w", encoding="utf_8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
+    except Exception as error:
+        print("Failed to write file {}: {}"
+              .format(repr(path), str(error)),
+              file=sys.stderr)
+        raise # Exception

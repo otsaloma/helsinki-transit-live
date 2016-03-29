@@ -34,6 +34,7 @@ except ImportError:
 from htl.paths import *
 from htl import util
 from htl import http
+from htl.filters import *
 from htl.tracker import *
 from htl.application import *
 

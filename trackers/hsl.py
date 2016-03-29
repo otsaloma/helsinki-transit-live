@@ -35,7 +35,6 @@ class Tracker:
     def __init__(self):
         """Initialize a :class:`Tracker` instance."""
         self._client = paho.mqtt.client.Client()
-        self._client.max_inflight_messages_set(100)
         self._client.on_message = self._on_message
         self._client.connect("213.138.147.225", port=1883, keepalive=60)
         self._lock = threading.Lock()
@@ -50,6 +49,21 @@ class Tracker:
         if re.match(r"^([1-9]|10)[A-Z]?$", line):
             return "tram"
         return "bus"
+
+    @htl.util.api_query(fallback=[])
+    def list_lines(self):
+        """Return a list of available lines."""
+        # XXX: There doesn't seem to be any list of lines available
+        # that support realtime information, so we have to get the
+        # full list of lines from the Digitransit routing API.
+        url = "http://beta.digitransit.fi/otp/routers/hsl/index/routes"
+        lines = htl.http.request_json(url)
+        return [{
+            "code": x["id"].replace("HSL:", ""),
+            "line": x.get("shortName", self._parse_line(x["id"])),
+            "description": x.get("longName", ""),
+            "mode": self._parse_mode(x.get("mode", "")),
+        } for x in lines]
 
     @htl.util.silent(Exception)
     def _on_message(self, client, userdata, message):
@@ -68,33 +82,33 @@ class Tracker:
         vehicle["type"] = self._guess_type(vehicle["line"])
         htl.app.update_vehicle(vehicle)
 
-    def start(self):
-        """Start monitoring for updates to vehicle positions."""
-        self._client.loop_start()
+    def _parse_line(self, code):
+        """Parse human readable line number from `code`."""
+        # codes are HSL: + shortened JORE-code.
+        # http://developer.reittiopas.fi/pages/en/http-get-interface-version-2.php
+        code = code.replace("HSL:", "")
+        if code.startswith(("13", "3")):
+            # Metro and trains.
+            return code[4] if len(code) > 4 else "X"
+        # Buses, trams and ferries.
+        line = code[1:5].strip()
+        while len(line) > 1 and line.startswith("0"):
+            line = line[1:].strip()
+        return line if line else "X"
 
-    def stop(self):
-        """Stop monitoring for updates to vehicle positions."""
-        self._client.loop_stop()
+    def _parse_mode(self, mode):
+        """Parse human readable mode from `mode`."""
+        return dict(RAIL="train",
+                    SUBWAY="metro",
+                    TRAM="tram",
+                    BUS="bus",
+                    FERRY="ferry").get(mode, "")
 
-    @htl.util.locked_method
-    def update(self, props):
-        """Update tracking to match `props`."""
+    def set_filters(self, filters):
+        """Set vehicle filters for downloading data."""
         topics = []
-        xmin = int(10 * props["xmin"])
-        xmax = int(10 * props["xmax"])
-        ymin = int(10 * props["ymin"])
-        ymax = int(10 * props["ymax"])
-        for x in range(xmin, xmax+1):
-            for y in range(ymin, ymax+1):
-                x0 = int(x / 10)
-                x1 = int(x % 10)
-                y0 = int(y / 10)
-                y1 = int(y % 10)
-                topics.append((
-                    "/hfp/journey/+/+/+/+/+/+/+/"
-                    "{y0:d};{x0:d}/{y1:d}{x1:d}/#"
-                    .format(**locals())))
-
+        for line in filters.get("lines", []):
+            topics.append("/hfp/journey/+/+/{}/#".format(line))
         for topic in set(self._topics) - set(topics):
             print("Unsubscribe: {}".format(topic))
             self._client.unsubscribe(topic)
@@ -103,3 +117,11 @@ class Tracker:
             print("Subscribe: {}".format(topic))
             self._client.subscribe(topic)
             self._topics.append(topic)
+
+    def start(self):
+        """Start monitoring for updates to vehicle positions."""
+        self._client.loop_start()
+
+    def stop(self):
+        """Stop monitoring for updates to vehicle positions."""
+        self._client.loop_stop()

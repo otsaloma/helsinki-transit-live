@@ -37,3 +37,8 @@ class TestTracker(htl.test.TestCase):
         assert self.tracker._guess_type("58") == "bus"
         assert self.tracker._guess_type("58B") == "bus"
         assert self.tracker._guess_type("506") == "bus"
+
+    def test_list_lines(self):
+        lines = self.tracker.list_lines()
+        assert isinstance(lines, list)
+        assert len(lines) > 100

@@ -147,6 +147,7 @@ def request_url(url, encoding=None, retry=1):
     to text using `encoding`. Try again `retry` times in some particular
     cases that imply a connection error.
     """
+    print("Requesting {}".format(url))
     try:
         connection = pool.get(url)
         connection.request("GET", url, headers=HEADERS)

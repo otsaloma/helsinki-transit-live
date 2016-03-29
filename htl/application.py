@@ -30,11 +30,14 @@ class Application:
 
     def __init__(self):
         """Initialize an :class:`Application` instance."""
+        self.filters = htl.Filters("hsl")
         self.tracker = htl.Tracker("hsl")
         self._utimes = {}
+        self.update_filters()
 
     def quit(self):
         """Quit the application."""
+        self.filters.write()
         self.tracker.stop()
         htl.http.pool.terminate()
 
@@ -46,15 +49,16 @@ class Application:
         """Stop threaded periodic updates."""
         self.tracker.stop()
 
-    def update_tracker(self, props):
-        """Update tracking to match `props`."""
-        self.tracker.update(props)
+    def update_filters(self):
+        """Update vehicle filters for downloading data."""
+        filters = self.filters.get_filters()
+        self.tracker.set_filters(filters)
 
     def update_vehicle(self, vehicle):
         """Update `vehicle` in QML map or add if missing."""
         if vehicle["id"] in self._utimes:
             # XXX: QML gets confused if we send updates faster than
-            # the QML animation length. We might need a queue here,
+            # the QML animation duration. We might need a queue here,
             # instead of just discarding updates.
             utime = self._utimes[vehicle["id"]]
             if time.time() - utime < 3.5: return

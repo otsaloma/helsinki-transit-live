@@ -55,6 +55,10 @@ class Tracker:
         loader = importlib.machinery.SourceFileLoader(name, path)
         self._provider = loader.load_module(name).Tracker()
 
+    def list_lines(self):
+        """Return a list of available lines."""
+        return self._provider.list_lines()
+
     def _load_attributes(self, id):
         """Read and return attributes from JSON file."""
         leaf = os.path.join("trackers", "{}.json".format(id))
@@ -63,14 +67,14 @@ class Tracker:
             path = os.path.join(htl.DATA_DIR, leaf)
         return path, htl.util.read_json(path)
 
+    def set_filters(self, filters):
+        """Set vehicle filters for downloading data."""
+        return self._provider.set_filters(filters)
+
     def start(self):
         """Start monitoring for updates to vehicle positions."""
-        self._provider.start()
+        return self._provider.start()
 
     def stop(self):
         """Stop monitoring for updates to vehicle positions."""
-        self._provider.stop()
-
-    def update(self, props):
-        """Update tracking to match `props`."""
-        self._provider.update(props)
+        return self._provider.stop()

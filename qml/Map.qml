@@ -30,7 +30,6 @@ Map {
     minimumZoomLevel: 12
     plugin: MapPlugin {}
 
-    property bool changed: true
     property var  positionMarker: PositionMarker {}
     property var  vehicles: []
     property real zoomLevelPrev: 8
@@ -59,13 +58,6 @@ Map {
         }
     }
 
-    Timer {
-        interval: 500
-        repeat: true
-        running: app.running
-        onTriggered: map.changed && map.updateTracker();
-    }
-
     MouseArea {
         anchors.fill: parent
         onDoubleClicked: map.centerOnPosition();
@@ -88,12 +80,6 @@ Map {
         // XXX: Must set zoomLevel in onCompleted.
         // http://bugreports.qt-project.org/browse/QTBUG-40779
         map.setZoomLevel(14);
-    }
-
-    onCenterChanged: {
-        // Ensure that vehicle tracking is updated after panning.
-        // This gets fired ridiculously often, so keep simple.
-        map.changed = true;
     }
 
     gesture.onPinchFinished: {
@@ -152,20 +138,6 @@ Map {
         // Set the current zoom level.
         map.zoomLevel = zoom;
         map.zoomLevelPrev = zoom;
-    }
-
-    function updateTracker() {
-        // Send coordinates of the data download area to the Python backend.
-        if (map.width <= 0 || map.height <= 0) return;
-        var nw = map.toCoordinate(Qt.point(0, 0));
-        var se = map.toCoordinate(Qt.point(map.width, map.height));
-        py.call("htl.app.update_tracker", [{
-            xmin: nw.longitude,
-            xmax: se.longitude,
-            ymin: se.latitude,
-            ymax: nw.latitude
-        }], null);
-        map.changed = false;
     }
 
     function updateVehicle(props) {
