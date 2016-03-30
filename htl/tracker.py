@@ -45,6 +45,7 @@ class Tracker:
         path, values = self._load_attributes(id)
         self.description = values["description"]
         self.id = id
+        self._lines = []
         self.name = values["name"]
         self._provider = None
         self._init_provider(re.sub(r"\.json$", ".py", path))
@@ -57,7 +58,14 @@ class Tracker:
 
     def list_lines(self):
         """Return a list of available lines."""
-        return self._provider.list_lines()
+        # Cache list of lines, assuming it is acquired via a
+        # possibly slow API call or file read.
+        if self._lines:
+            return self._lines
+        lines = self._provider.list_lines()
+        if lines:
+            self._lines = lines
+        return lines
 
     def _load_attributes(self, id):
         """Read and return attributes from JSON file."""

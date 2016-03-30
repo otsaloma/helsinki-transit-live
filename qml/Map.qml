@@ -27,7 +27,7 @@ Map {
     center: QtPositioning.coordinate(60.169, 24.941)
     focus: true
     gesture.enabled: true
-    minimumZoomLevel: 12
+    minimumZoomLevel: 6
     plugin: MapPlugin {}
 
     property var  positionMarker: PositionMarker {}
