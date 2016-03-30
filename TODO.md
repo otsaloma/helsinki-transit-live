@@ -5,5 +5,6 @@ Helsinki Transit Live 1.3
       previous HSL Live API, this adds buses and trains)
 * [ ] Add line filters
 * [ ] Add user interface translations?
+* [x] Redraw tram shape in icon
 
 [1.3a]: http://digitransit.fi/en/developers/service-catalogue/internal-components/navigator-server/
