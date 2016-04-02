@@ -28,13 +28,9 @@ Page {
     property string query: ""
     SilicaGridView {
         id: view
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
+        anchors.fill: parent
         anchors.leftMargin: Theme.paddingLarge/2
-        anchors.right: parent.right
-        anchors.rightMargin: Theme.paddingLarge/2
-        anchors.top: parent.top
-        cellWidth: (page.width - 2*Theme.paddingLarge) / 3
+        cellWidth: (page.width - 1.5*Theme.paddingLarge) / 3
         // Prevent list items from stealing focus.
         currentIndex: -1
         delegate: ListItem {
