@@ -30,7 +30,7 @@ Map {
     minimumZoomLevel: 6
     plugin: MapPlugin {}
 
-    property var  positionMarker: PositionMarker {}
+    property bool showMenuButton: true
     property var  vehicles: []
     property real zoomLevelPrev: 8
 
@@ -41,6 +41,9 @@ Map {
         }
     }
 
+    MenuButton {}
+    PositionMarker {}
+
     Timer {
         // XXX: For some reason we need to do something to trigger
         // a redraw to avoid only a part of tiles being displayed
@@ -50,11 +53,11 @@ Map {
         repeat: true
         running: app.running
         triggeredOnStart: true
-        property var initTime: Date.now()
+        property int timesRun: 0
         onTriggered: {
-            map.pan(+1, -1);
-            map.pan(-1, +1);
-            timer.running = Date.now() - timer.initTime < 5000;
+            map.pan(+2, -2);
+            map.pan(-2, +2);
+            timer.running = timesRun++ < 5;
         }
     }
 
@@ -70,10 +73,8 @@ Map {
             var type = map.supportedMapTypes[i];
             if (type.style  === MapType.GrayStreetMap &&
                 type.mobile === true &&
-                type.night  === false) {
+                type.night  === false)
                 map.activeMapType = type;
-                break;
-            }
         }
         map.centerOnPosition();
         gps.onInitialCenterChanged.connect(map.centerOnPosition);
@@ -121,6 +122,15 @@ Map {
             gps.position.coordinate.latitude,
             gps.position.coordinate.longitude);
 
+    }
+
+    function removeAllVehicles() {
+        // Remove all vehicle markers.
+        while (map.vehicles.length > 0) {
+            map.removeMapItem(map.vehicles[0]);
+            map.vehicles[0].destroy();
+            map.vehicles.shift();
+        }
     }
 
     function removeVehicle(id) {

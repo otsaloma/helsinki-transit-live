@@ -26,7 +26,6 @@ class TestTracker(htl.test.TestCase):
         path = os.path.join(os.path.dirname(__file__), "..", "hsl.py")
         loader = importlib.machinery.SourceFileLoader("tracker", path)
         self.tracker = loader.load_module("tracker").Tracker()
-        self.bbox = dict(xmin=24.91, ymin=60.11, xmax=25.01, ymax=60.19)
 
     def test__guess_type(self):
         assert self.tracker._guess_type("M") == "metro"

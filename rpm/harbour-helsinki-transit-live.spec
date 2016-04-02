@@ -23,9 +23,9 @@ Requires: sailfishsilica-qt5
 %description
 View buses, trams, trains and metro moving in real-time on a map.
 
-Included are all Helsinki Region Transport (HSL) public transportation vehicles
-which have realtime information available. Positions of vehicles are from the
-Digitransit HSL MQTT API and based on GPS-positioning.
+Included are all Helsinki Region Transport (HSL) public transport vehicles
+which have realtime information available. Positions of vehicles are from
+the Digitransit HSL MQTT API and based on GPS-positioning.
 
 %prep
 %setup -q

@@ -37,12 +37,16 @@ class Filters:
 
     def add_line(self, line):
         """Add `line` to the list of line filters."""
-        self.remove_line(line)
-        self._filters[self.id]["lines"].append(line)
+        if not line in self._filters[self.id]["lines"]:
+            self._filters[self.id]["lines"].append(line)
 
     def get_filters(self):
         """Return a dictionary of vehicle filters."""
         return copy.deepcopy(self._filters[self.id])
+
+    def get_lines(self):
+        """Return a list of line filters."""
+        return sorted(self._filters[self.id]["lines"])
 
     def _read(self):
         """Read list of filters from file."""

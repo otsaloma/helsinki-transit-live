@@ -1,6 +1,6 @@
 /* -*- coding: utf-8-unix -*-
  *
- * Copyright (C) 2013 Osmo Salomaa
+ * Copyright (C) 2014 Osmo Salomaa
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,24 +17,13 @@
  */
 
 import QtQuick 2.0
-import QtPositioning 5.3
 import Sailfish.Silica 1.0
-import "."
 
-Cover {
-    id: cover
-    property bool active: status === Cover.Active
-    Map {
-        id: coverMap
-        showMenuButton: false
-    }
-    onStatusChanged: {
-        if (cover.status === Cover.Activating) {
-            coverMap.center = QtPositioning.coordinate(
-                map.center.latitude, map.center.longitude);
-            coverMap.setZoomLevel(Math.max(coverMap.minimumZoomLevel,
-                                           map.zoomLevel-1));
-
-        }
-    }
+Label {
+    anchors.left: parent.left
+    anchors.leftMargin: Theme.paddingLarge
+    anchors.right: parent.right
+    anchors.rightMargin: Theme.paddingLarge
+    truncationMode: TruncationMode.Fade
+    verticalAlignment: Text.AlignVCenter
 }

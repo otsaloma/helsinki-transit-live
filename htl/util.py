@@ -139,6 +139,8 @@ def type_to_color(type):
         return "#ff6319"
     if type == "tram":
         return "#00985f"
+    if type == "ferry":
+        return "#00b9e4"
     return "#007ac9"
 
 def write_json(data, path):

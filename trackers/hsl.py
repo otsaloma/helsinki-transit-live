@@ -58,12 +58,22 @@ class Tracker:
         # full list of lines from the Digitransit routing API.
         url = "http://beta.digitransit.fi/otp/routers/hsl/index/routes"
         lines = htl.http.request_json(url)
-        return [{
+        lines = [{
             "code": x["id"].replace("HSL:", ""),
             "line": x.get("shortName", self._parse_line(x["id"])),
             "description": x.get("longName", ""),
-            "mode": self._parse_mode(x.get("mode", "")),
+            "type": self._parse_type(x.get("mode", "")),
+            "area": self._parse_area(x["id"]),
         } for x in lines]
+        def line_to_sort_key(line):
+            """Construct a sortable key from `line`."""
+            # Break into line and modifier, pad with zeros.
+            head, tail = line["line"], ""
+            while head and head[0].isdigit() and head[-1].isalpha():
+                tail = head[-1] + tail
+                head = head[:-1]
+            return head.zfill(3), tail.zfill(3)
+        return sorted(lines, key=line_to_sort_key)
 
     @htl.util.silent(Exception)
     def _on_message(self, client, userdata, message):
@@ -82,6 +92,19 @@ class Tracker:
         vehicle["type"] = self._guess_type(vehicle["line"])
         htl.app.update_vehicle(vehicle)
 
+    def _parse_area(self, code):
+        """Parse operation area from `code`."""
+        # codes are HSL: + shortened JORE-code.
+        # http://developer.reittiopas.fi/pages/en/http-get-interface-version-2.php
+        code = code.replace("HSL:", "")
+        if len(code) < 1: return ""
+        return {"1": "Helsinki",
+                "2": "Espoo",
+                "3": "Regional",
+                "4": "Vantaa",
+                "5": "Regional",
+                "7": "U-line"}.get(code[0], "Other")
+
     def _parse_line(self, code):
         """Parse human readable line number from `code`."""
         # codes are HSL: + shortened JORE-code.
@@ -96,13 +119,13 @@ class Tracker:
             line = line[1:].strip()
         return line if line else "X"
 
-    def _parse_mode(self, mode):
-        """Parse human readable mode from `mode`."""
+    def _parse_type(self, type):
+        """Parse human readable type from `type`."""
         return dict(RAIL="train",
                     SUBWAY="metro",
                     TRAM="tram",
                     BUS="bus",
-                    FERRY="ferry").get(mode, "")
+                    FERRY="ferry").get(type, "")
 
     def set_filters(self, filters):
         """Set vehicle filters for downloading data."""

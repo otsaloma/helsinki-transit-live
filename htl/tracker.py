@@ -58,8 +58,8 @@ class Tracker:
 
     def list_lines(self):
         """Return a list of available lines."""
-        # Cache list of lines, assuming it is acquired via a
-        # possibly slow API call or file read.
+        # Cache list of lines, assuming it is acquired via
+        # a possibly slow API call or file read.
         if self._lines:
             return self._lines
         lines = self._provider.list_lines()
