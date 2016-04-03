@@ -29,15 +29,21 @@ import paho.mqtt.client
 import re
 import time
 
+DOMAIN = "213.138.147.225"
+PORT = 1883
+
 
 class Tracker:
 
     def __init__(self):
         """Initialize a :class:`Tracker` instance."""
         self._btime = -1
+        self._disconnected = False
         self._client = paho.mqtt.client.Client()
+        self._client.on_connect  = self._on_connect
+        self._client.on_disconnect  = self._on_disconnect
         self._client.on_message = self._on_message
-        self._client.connect("213.138.147.225", port=1883, keepalive=60)
+        self._client.connect(DOMAIN, PORT)
         self._topics = []
 
     @htl.util.silent(Exception)
@@ -90,6 +96,20 @@ class Tracker:
                 head = head[:-1]
             return head.zfill(3), tail.zfill(3)
         return sorted(lines, key=line_to_sort_key)
+
+    def _on_connect(self, client, userdata, flags, rc):
+        """Keep track of `client`'s connection state."""
+        self._disconnected = False
+        for topic in self._topics:
+            print("Subscribe: {}".format(topic))
+            self._client.subscribe(topic)
+
+    def _on_disconnect(self, client, userdata, rc):
+        """Keep track of `client`'s connection state."""
+        self._disconnected = True
+        for topic in self._topics:
+            print("Unsubscribe: {}".format(topic))
+            self._client.unsubscribe(topic)
 
     @htl.util.silent(Exception)
     def _on_message(self, client, userdata, message):
@@ -168,6 +188,8 @@ class Tracker:
 
     def start(self):
         """Start monitoring for updates to vehicle positions."""
+        if self._disconnected:
+            self._client.connect(DOMAIN, PORT)
         self._client.loop_start()
         # At application start or after a significant period inactivity
         # (using another application), load a cache dump of last known
