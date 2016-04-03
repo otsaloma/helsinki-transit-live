@@ -56,6 +56,10 @@ class Tracker:
         loader = importlib.machinery.SourceFileLoader(name, path)
         self._provider = loader.load_module(name).Tracker()
 
+    def bootstrap(self):
+        """Fetch the last known positions of vehicles."""
+        return self._provider.bootstrap()
+
     def list_lines(self):
         """Return a list of available lines."""
         # Cache list of lines, assuming it is acquired via

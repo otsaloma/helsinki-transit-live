@@ -41,8 +41,8 @@ class Tracker:
         self._topics = []
 
     @htl.util.silent(Exception)
-    def _bootstrap(self):
-        """Fetch a cache of the last known positions of vehicles."""
+    def bootstrap(self):
+        """Fetch the last known positions of vehicles."""
         self._btime = time.time()
         url = "http://beta.digitransit.fi/navigator-server/hfp/journey/#"
         vehicles = htl.http.request_json(url)
@@ -169,7 +169,7 @@ class Tracker:
         # (using another application), load a cache dump of last known
         # vehicle locations and update all vehicles in one go.
         if time.time() - self._btime > 300:
-            self._bootstrap()
+            self.bootstrap()
 
     def stop(self):
         """Stop monitoring for updates to vehicle positions."""
