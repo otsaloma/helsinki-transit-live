@@ -153,14 +153,18 @@ class Tracker:
         topics = []
         for line in filters.get("lines", []):
             topics.append("/hfp/journey/+/+/{}/#".format(line))
+        changed = False
         for topic in set(self._topics) - set(topics):
             print("Unsubscribe: {}".format(topic))
             self._client.unsubscribe(topic)
             self._topics.remove(topic)
+            changed = True
         for topic in set(topics) - set(self._topics):
             print("Subscribe: {}".format(topic))
             self._client.subscribe(topic)
             self._topics.append(topic)
+            changed = True
+        return changed
 
     def start(self):
         """Start monitoring for updates to vehicle positions."""

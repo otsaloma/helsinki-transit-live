@@ -80,7 +80,11 @@ class Tracker:
         return path, htl.util.read_json(path)
 
     def set_filters(self, filters):
-        """Set vehicle filters for downloading data."""
+        """
+        Set vehicle filters for downloading data.
+
+        Return ``True`` if filters changed, else ``False``.
+        """
         return self._provider.set_filters(filters)
 
     def start(self):

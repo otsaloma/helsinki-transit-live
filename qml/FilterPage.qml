@@ -107,8 +107,9 @@ Page {
             page.loadLines();
         } else if (page.status === PageStatus.Deactivating) {
             // Update data downloading and map display.
-            map.removeAllVehicles();
-            py.call("htl.app.update_filters", [], function() {
+            py.call("htl.app.update_filters", [], function(changed) {
+                if (!changed) return;
+                map.removeAllVehicles();
                 py.call("htl.app.tracker.bootstrap", [], null);
             });
         }

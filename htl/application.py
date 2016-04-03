@@ -50,9 +50,13 @@ class Application:
         self.tracker.stop()
 
     def update_filters(self):
-        """Update vehicle filters for downloading data."""
+        """
+        Update vehicle filters for downloading data.
+
+        Return ``True`` if filters changed, else ``False``.
+        """
         filters = self.filters.get_filters()
-        self.tracker.set_filters(filters)
+        return self.tracker.set_filters(filters)
 
     def update_vehicle(self, vehicle):
         """Update `vehicle` in QML map or add if missing."""
