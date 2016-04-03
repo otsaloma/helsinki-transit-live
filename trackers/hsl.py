@@ -27,18 +27,34 @@ import htl
 import json
 import paho.mqtt.client
 import re
-import threading
+import time
 
 
 class Tracker:
 
     def __init__(self):
         """Initialize a :class:`Tracker` instance."""
+        self._btime = -1
         self._client = paho.mqtt.client.Client()
         self._client.on_message = self._on_message
         self._client.connect("213.138.147.225", port=1883, keepalive=60)
-        self._lock = threading.Lock()
         self._topics = []
+
+    @htl.util.silent(Exception)
+    def _bootstrap(self):
+        """Fetch a cache of the last known positions of vehicles."""
+        self._btime = time.time()
+        url = "http://beta.digitransit.fi/navigator-server/hfp/journey/#"
+        vehicles = htl.http.request_json(url)
+        lines = htl.app.filters.get_lines()
+        for topic, payload in vehicles.items():
+            parts = topic.split("/")
+            if len(parts) < 6: continue
+            if not parts[5] in lines: continue
+            message = paho.mqtt.client.MQTTMessage()
+            message.topic = topic
+            message.payload = json.dumps(payload)
+            self._on_message(self._client, None, message)
 
     def _guess_type(self, line):
         """Guess vehicle type based on `line`."""
@@ -78,8 +94,10 @@ class Tracker:
     @htl.util.silent(Exception)
     def _on_message(self, client, userdata, message):
         """Parse and relay updates to positions of vehicles."""
-        blob = message.payload.decode("utf_8", errors="replace")
-        blob = json.loads(blob)["VP"]
+        payload = message.payload
+        if isinstance(payload, bytes):
+            payload = payload.decode("utf_8", errors="replace")
+        blob = json.loads(payload)["VP"]
         vehicle = dict(id=str(blob["veh"]),
                        line=str(blob["desi"]),
                        x=float(blob["long"]),
@@ -87,6 +105,9 @@ class Tracker:
 
         if vehicle["id"] in ("0", "XXX"): raise ValueError
         if vehicle["line"] in ("0", "XXX"): raise ValueError
+        # If line looks like a JORE-code, try to parse it.
+        if re.match(r"^[0-9]{4}", vehicle["line"]):
+            vehicle["line"] = self._parse_line(vehicle["line"])
         with htl.util.silent(Exception):
             vehicle["bearing"] = float(blob["hdg"])
         vehicle["type"] = self._guess_type(vehicle["line"])
@@ -144,6 +165,11 @@ class Tracker:
     def start(self):
         """Start monitoring for updates to vehicle positions."""
         self._client.loop_start()
+        # At application start or after a significant period inactivity
+        # (using another application), load a cache dump of last known
+        # vehicle locations and update all vehicles in one go.
+        if time.time() - self._btime > 300:
+            self._bootstrap()
 
     def stop(self):
         """Stop monitoring for updates to vehicle positions."""
