@@ -34,6 +34,7 @@ ApplicationWindow {
     PositionSource { id: gps }
     Python { id: py }
     Component.onCompleted: {
+        py.setHandler("remove-all-vehicles", map.removeAllVehicles);
         py.setHandler("update-vehicle", map.updateVehicle);
     }
     Component.onDestruction: {

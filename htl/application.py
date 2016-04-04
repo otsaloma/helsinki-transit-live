@@ -31,32 +31,46 @@ class Application:
     def __init__(self):
         """Initialize an :class:`Application` instance."""
         self.filters = htl.Filters("hsl")
-        self.tracker = htl.Tracker("hsl")
+        self._lines = []
+        self._times_started = 0
+        self._tracker = htl.Tracker("hsl")
         self._utimes = {}
-        self.update_filters()
+
+    def bootstrap(self):
+        """Fetch the last known positions of vehicles."""
+        return self._tracker.bootstrap()
+
+    def list_lines(self):
+        """Return a list of available lines."""
+        # Cache list of lines, assuming it is acquired via
+        # a possibly slow API call or file read.
+        if self._lines:
+            return self._lines
+        lines = self._tracker.list_lines()
+        if lines:
+            self._lines = lines
+        return lines
 
     def quit(self):
         """Quit the application."""
         self.filters.write()
-        self.tracker.stop()
+        self._tracker.stop()
         htl.http.pool.terminate()
 
     def start(self):
         """Start threaded periodic updates."""
-        self.tracker.start()
+        if self._times_started == 0:
+            self.update_filters()
+        self._tracker.start()
+        self._times_started += 1
 
     def stop(self):
         """Stop threaded periodic updates."""
-        self.tracker.stop()
+        self._tracker.stop()
 
     def update_filters(self):
-        """
-        Update vehicle filters for downloading data.
-
-        Return ``True`` if filters changed, else ``False``.
-        """
-        filters = self.filters.get_filters()
-        return self.tracker.set_filters(filters)
+        """Update vehicle filters, return ``True`` if changed."""
+        return self._tracker.update_filters()
 
     def update_vehicle(self, vehicle):
         """Update `vehicle` in QML map or add if missing."""

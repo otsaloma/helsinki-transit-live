@@ -26,6 +26,7 @@ http://dev.hsl.fi/live/
 import htl
 import json
 import paho.mqtt.client
+import pyotherside
 import re
 import time
 
@@ -38,13 +39,18 @@ class Tracker:
     def __init__(self):
         """Initialize a :class:`Tracker` instance."""
         self._btime = -1
+        self._client = None
         self._disconnected = False
+        self._topics = []
+        self._init_client()
+
+    def _init_client(self):
+        """Initialize and connect the MQTT client."""
         self._client = paho.mqtt.client.Client()
         self._client.on_connect  = self._on_connect
         self._client.on_disconnect  = self._on_disconnect
         self._client.on_message = self._on_message
         self._client.connect(DOMAIN, PORT)
-        self._topics = []
 
     @htl.util.silent(Exception)
     def bootstrap(self):
@@ -53,6 +59,7 @@ class Tracker:
         url = "http://beta.digitransit.fi/navigator-server/hfp/journey/#"
         vehicles = htl.http.request_json(url)
         lines = htl.app.filters.get_lines()
+        pyotherside.send("remove-all-vehicles")
         for topic, payload in vehicles.items():
             parts = topic.split("/")
             if len(parts) < 6: continue
@@ -168,24 +175,6 @@ class Tracker:
                     BUS="bus",
                     FERRY="ferry").get(type, "")
 
-    def set_filters(self, filters):
-        """Set vehicle filters for downloading data."""
-        topics = []
-        for line in filters.get("lines", []):
-            topics.append("/hfp/journey/+/+/{}/#".format(line))
-        changed = False
-        for topic in set(self._topics) - set(topics):
-            print("Unsubscribe: {}".format(topic))
-            self._client.unsubscribe(topic)
-            self._topics.remove(topic)
-            changed = True
-        for topic in set(topics) - set(self._topics):
-            print("Subscribe: {}".format(topic))
-            self._client.subscribe(topic)
-            self._topics.append(topic)
-            changed = True
-        return changed
-
     def start(self):
         """Start monitoring for updates to vehicle positions."""
         if self._disconnected:
@@ -200,3 +189,22 @@ class Tracker:
     def stop(self):
         """Stop monitoring for updates to vehicle positions."""
         self._client.loop_stop()
+
+    def update_filters(self):
+        """Update vehicle filters, return ``True`` if changed."""
+        topics = []
+        filters = htl.app.filters.get_filters()
+        for line in filters.get("lines", []):
+            topics.append("/hfp/journey/+/+/{}/#".format(line))
+        changed = False
+        for topic in set(self._topics) - set(topics):
+            print("Unsubscribe: {}".format(topic))
+            self._client.unsubscribe(topic)
+            self._topics.remove(topic)
+            changed = True
+        for topic in set(topics) - set(self._topics):
+            print("Subscribe: {}".format(topic))
+            self._client.subscribe(topic)
+            self._topics.append(topic)
+            changed = True
+        return changed

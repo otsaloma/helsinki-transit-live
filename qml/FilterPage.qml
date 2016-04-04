@@ -108,9 +108,7 @@ Page {
         } else if (page.status === PageStatus.Deactivating) {
             // Update data downloading and map display.
             py.call("htl.app.update_filters", [], function(changed) {
-                if (!changed) return;
-                map.removeAllVehicles();
-                py.call("htl.app.tracker.bootstrap", [], null);
+                changed && py.call("htl.app.bootstrap", [], null);
             });
         }
     }
@@ -157,7 +155,7 @@ Page {
     function loadLines() {
         // Load list of lines from the Python backend.
         var selected = py.call_sync("htl.app.filters.get_lines", []);
-        py.call("htl.app.tracker.list_lines", [], function(lines) {
+        py.call("htl.app.list_lines", [], function(lines) {
             if (lines.length === 0) {
                 busy.error = "No lines found";
                 page.loading = false;
