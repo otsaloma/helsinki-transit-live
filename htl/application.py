@@ -54,7 +54,7 @@ class Application:
     def quit(self):
         """Quit the application."""
         self.filters.write()
-        self._tracker.stop()
+        self._tracker.quit()
         htl.http.pool.terminate()
 
     def start(self):

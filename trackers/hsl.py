@@ -27,7 +27,6 @@ import htl
 import json
 import paho.mqtt.client
 import pyotherside
-import re
 import time
 
 DOMAIN = "213.138.147.225"
@@ -69,15 +68,11 @@ class Tracker:
             message.payload = json.dumps(payload)
             self._on_message(self._client, None, message)
 
-    def _guess_type(self, line):
-        """Guess vehicle type based on `line`."""
-        if re.match(r"^[MV]$", line):
-            return "metro"
-        if re.match(r"^[A-Z]$", line):
-            return "train"
-        if re.match(r"^([1-9]|10)[A-Z]?$", line):
-            return "tram"
-        return "bus"
+    def _ensure_str(self, blob):
+        """Return `blob` converted to ``str`` if ``bytes``."""
+        if isinstance(blob, bytes):
+            return blob.decode("utf_8", errors="replace")
+        return blob
 
     @htl.util.api_query(fallback=[])
     def list_lines(self):
@@ -121,23 +116,21 @@ class Tracker:
     @htl.util.silent(Exception)
     def _on_message(self, client, userdata, message):
         """Parse and relay updates to positions of vehicles."""
-        payload = message.payload
-        if isinstance(payload, bytes):
-            payload = payload.decode("utf_8", errors="replace")
-        blob = json.loads(payload)["VP"]
-        vehicle = dict(id=str(blob["veh"]),
-                       line=str(blob["desi"]),
-                       x=float(blob["long"]),
-                       y=float(blob["lat"]))
-
+        topic = self._ensure_str(message.topic).split("/")
+        payload = self._ensure_str(message.payload)
+        payload = json.loads(payload)["VP"]
+        vehicle = {
+            "id":   topic[4],
+            "code": topic[5],
+            "line": self._parse_line(topic[5]),
+            "type": self._parse_type(topic[3]),
+            "x":    float(payload["long"]),
+            "y":    float(payload["lat"]),
+        }
         if vehicle["id"] in ("0", "XXX"): raise ValueError
         if vehicle["line"] in ("0", "XXX"): raise ValueError
-        # If line looks like a JORE-code, try to parse it.
-        if re.match(r"^[0-9]{4}", vehicle["line"]):
-            vehicle["line"] = self._parse_line(vehicle["line"])
         with htl.util.silent(Exception):
-            vehicle["bearing"] = float(blob["hdg"])
-        vehicle["type"] = self._guess_type(vehicle["line"])
+            vehicle["bearing"] = float(payload["hdg"])
         htl.app.update_vehicle(vehicle)
 
     def _parse_area(self, code):
@@ -169,22 +162,27 @@ class Tracker:
 
     def _parse_type(self, type):
         """Parse human readable type from `type`."""
-        return dict(RAIL="train",
-                    SUBWAY="metro",
-                    TRAM="tram",
-                    BUS="bus",
-                    FERRY="ferry").get(type, "")
+        return dict(rail="train",
+                    subway="metro",
+                    tram="tram",
+                    bus="bus",
+                    ferry="ferry").get(type.lower(), "")
+
+    def quit(self):
+        """Stop monitoring and disconnect the client."""
+        self._client.loop_stop()
+        self._client.disconnect()
 
     def start(self):
         """Start monitoring for updates to vehicle positions."""
         if self._disconnected:
             self._client.connect(DOMAIN, PORT)
-        self._client.loop_start()
         # At application start or after a significant period inactivity
         # (using another application), load a cache dump of last known
         # vehicle locations and update all vehicles in one go.
         if time.time() - self._btime > 300:
             self.bootstrap()
+        self._client.loop_start()
 
     def stop(self):
         """Stop monitoring for updates to vehicle positions."""
