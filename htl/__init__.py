@@ -17,7 +17,7 @@
 
 """Show real-time locations of HSL public transportation vehicles."""
 
-__version__ = "1.2.999"
+__version__ = "1.3"
 
 try:
     import pyotherside

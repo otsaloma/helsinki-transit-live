@@ -1,3 +1,13 @@
+Helsinki Transit Live 1.3
+=========================
+
+* Use the new [Digitransit HSL MQTT API][1.3a] (compared to the
+  previous HSL Live API, this adds buses and trains)
+* Add line filters
+* Redraw tram shape in icon
+
+[1.3a]: http://digitransit.fi/en/developers/service-catalogue/internal-components/navigator-server/
+
 Helsinki Transit Live 1.2
 =========================
 
