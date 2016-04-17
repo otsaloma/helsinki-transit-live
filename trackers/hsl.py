@@ -153,12 +153,12 @@ class Tracker:
         code = code.replace("HSL:", "")
         if code.startswith(("13", "3")):
             # Metro and trains.
-            return code[4] if len(code) > 4 else "X"
+            return code[4] if len(code) > 4 else ""
         # Buses, trams and ferries.
         line = code[1:5].strip()
         while len(line) > 1 and line.startswith("0"):
             line = line[1:].strip()
-        return line if line else "X"
+        return line if line else ""
 
     def _parse_type(self, type):
         """Parse human readable type from `type`."""
