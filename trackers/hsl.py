@@ -27,6 +27,7 @@ import htl
 import json
 import paho.mqtt.client
 import pyotherside
+import sys
 import time
 
 DOMAIN = "213.138.147.225"
@@ -49,7 +50,7 @@ class Tracker:
         self._client.on_connect  = self._on_connect
         self._client.on_disconnect  = self._on_disconnect
         self._client.on_message = self._on_message
-        self._client.connect(DOMAIN, PORT)
+        self._connect()
 
     @htl.util.silent(Exception)
     def bootstrap(self):
@@ -67,6 +68,15 @@ class Tracker:
             message.topic = topic
             message.payload = json.dumps(payload)
             self._on_message(self._client, None, message)
+
+    def _connect(self):
+        """Establish MQTT connection to DOMAIN, PORT."""
+        try:
+            self._client.connect(DOMAIN, PORT)
+        except Exception as error:
+            print("Failed to establish MQTT connection: {}"
+                  .format(str(error)),
+                  file=sys.stderr)
 
     def _ensure_str(self, blob):
         """Return `blob` converted to ``str`` if ``bytes``."""
@@ -176,7 +186,7 @@ class Tracker:
     def start(self):
         """Start monitoring for updates to vehicle positions."""
         if self._disconnected:
-            self._client.connect(DOMAIN, PORT)
+            self._connect()
         # At application start or after a significant period inactivity
         # (using another application), load a cache dump of last known
         # vehicle locations and update all vehicles in one go.
