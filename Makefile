@@ -10,7 +10,7 @@ DESKTOPDIR = $(DESTDIR)$(PREFIX)/share/applications
 ICONDIR    = $(DESTDIR)$(PREFIX)/share/icons/hicolor
 
 check:
-	pyflakes htl
+	pyflakes htl trackers
 
 clean:
 	rm -rf dist
@@ -62,6 +62,6 @@ rpm:
 	cp $$HOME/rpmbuild/SRPMS/$(NAME)-$(VERSION)-*.rpm rpm
 
 test:
-	py.test htl
+	py.test htl trackers
 
 .PHONY: check clean dist install rpm test

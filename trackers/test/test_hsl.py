@@ -27,16 +27,6 @@ class TestTracker(htl.test.TestCase):
         loader = importlib.machinery.SourceFileLoader("tracker", path)
         self.tracker = loader.load_module("tracker").Tracker()
 
-    def test__guess_type(self):
-        assert self.tracker._guess_type("M") == "metro"
-        assert self.tracker._guess_type("A") == "train"
-        assert self.tracker._guess_type("4") == "tram"
-        assert self.tracker._guess_type("7A") == "tram"
-        assert self.tracker._guess_type("10") == "tram"
-        assert self.tracker._guess_type("58") == "bus"
-        assert self.tracker._guess_type("58B") == "bus"
-        assert self.tracker._guess_type("506") == "bus"
-
     def test_list_lines(self):
         lines = self.tracker.list_lines()
         assert isinstance(lines, list)
