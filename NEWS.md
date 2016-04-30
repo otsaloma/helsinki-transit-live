@@ -1,3 +1,8 @@
+Helsinki Transit Live 1.3.2
+===========================
+
+* Update API URLs
+
 Helsinki Transit Live 1.3.1
 ===========================
 
