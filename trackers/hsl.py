@@ -38,10 +38,10 @@ class Tracker:
 
     def __init__(self):
         """Initialize a :class:`Tracker` instance."""
-        self._btime = -1
         self._client = None
         self._disconnected = False
         self._topics = []
+        self._utime = -1
         self._init_client()
 
     def _init_client(self):
@@ -55,7 +55,7 @@ class Tracker:
     @htl.util.silent(Exception)
     def bootstrap(self):
         """Fetch the last known positions of vehicles."""
-        self._btime = time.time()
+        self._utime = time.time()
         url = "http://api.digitransit.fi/realtime/vehicle-positions/v1/hfp/journey/"
         vehicles = htl.http.request_json(url)
         lines = htl.app.filters.get_lines()
@@ -126,6 +126,7 @@ class Tracker:
     @htl.util.silent(Exception)
     def _on_message(self, client, userdata, message):
         """Parse and relay updates to positions of vehicles."""
+        self._utime = time.time()
         topic = self._ensure_str(message.topic).split("/")
         payload = self._ensure_str(message.payload)
         payload = json.loads(payload)["VP"]
@@ -190,7 +191,7 @@ class Tracker:
         # At application start or after a significant period inactivity
         # (using another application), load a cache dump of last known
         # vehicle locations and update all vehicles in one go.
-        if time.time() - self._btime > 300:
+        if time.time() - self._utime > 300:
             self.bootstrap()
         self._client.loop_start()
 
