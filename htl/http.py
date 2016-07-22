@@ -83,7 +83,7 @@ class ConnectionPool:
             "http":  http.client.HTTPConnection,
             "https": http.client.HTTPSConnection,
         }[components.scheme]
-        return cls(components.netloc, timeout=10)
+        return cls(components.netloc, timeout=15)
 
     def put(self, url, connection):
         """Return `connection` to the pool of connections."""
