@@ -51,7 +51,7 @@ class Filters:
     def _read(self):
         """Read list of filters from file."""
         if os.path.isfile(self._path):
-            with htl.util.silent(Exception):
+            with htl.util.silent(Exception, tb=True):
                 self._filters = htl.util.read_json(self._path)
         if not self.id in self._filters:
             self._filters[self.id] = {}
@@ -68,5 +68,5 @@ class Filters:
         """Write list of filters to file."""
         for id in self._filters:
             self._filters[id]["lines"].sort()
-        with htl.util.silent(Exception):
+        with htl.util.silent(Exception, tb=True):
             htl.util.write_json(self._filters, self._path)

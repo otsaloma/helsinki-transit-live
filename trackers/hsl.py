@@ -52,7 +52,7 @@ class Tracker:
         self._client.on_message = self._on_message
         self._connect()
 
-    @htl.util.silent(Exception)
+    @htl.util.silent(Exception, tb=True)
     def bootstrap(self):
         """Fetch the last known positions of vehicles."""
         self._utime = time.time()

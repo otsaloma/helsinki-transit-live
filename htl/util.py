@@ -79,7 +79,7 @@ def atomic_open(path, mode="w", *args, **kwargs):
             # Fall back on a non-atomic operation.
             shutil.move(temp_path, path)
     finally:
-        with silent(Exception):
+        with silent(Exception, tb=True):
             os.remove(temp_path)
 
 def locked_method(function):
@@ -122,12 +122,12 @@ def read_json(path):
         raise # Exception
 
 @contextlib.contextmanager
-def silent(*exceptions):
+def silent(*exceptions, tb=False):
     """Try to execute body, ignoring `exceptions`."""
     try:
         yield
     except exceptions:
-        pass
+        if tb: traceback.print_exc()
 
 def type_to_color(type):
     """Return hexadecimal color for type."""
