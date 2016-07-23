@@ -29,7 +29,7 @@ MapQuickItem {
         Image {
             id: image
             rotation: vehicle.bearing
-            smooth: false
+            smooth: true
             source: app.getIcon(vehicle.type)
         }
         Rectangle {
@@ -45,7 +45,7 @@ MapQuickItem {
             color: "white"
             font.bold: true
             font.family: "sans-serif"
-            font.pixelSize: Math.round(Theme.pixelRatio*16)
+            font.pixelSize: Math.round(Theme.pixelRatio*18)
             text: vehicle.line
             textFormat: Text.PlainText
         }

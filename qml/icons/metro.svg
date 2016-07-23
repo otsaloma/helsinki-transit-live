@@ -10,11 +10,11 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
+   width="72"
+   height="72"
    id="svg1901"
    sodipodi:version="0.32"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="metro.svg"
    version="1.1"
    inkscape:export-xdpi="90"
@@ -44,58 +44,10 @@
        gradientUnits="userSpaceOnUse" />
     <filter
        inkscape:collect="always"
-       id="filter10939"
-       x="-0.27975671"
-       width="1.5595134"
-       y="-0.21013706"
-       height="1.4202741">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="3.96322"
-         id="feGaussianBlur10941" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter10961"
-       x="-0.27975671"
-       width="1.5595134"
-       y="-0.21013706"
-       height="1.4202741">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="3.96322"
-         id="feGaussianBlur10963" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter10987"
-       x="-0.34152599"
-       width="1.683052"
-       y="-0.37947332"
-       height="1.7589466">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="2.8460499"
-         id="feGaussianBlur10989" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter11017"
-       x="-0.28460499"
-       width="1.56921"
-       y="-0.31622777"
-       height="1.6324555">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="2.3717082"
-         id="feGaussianBlur11019" />
-    </filter>
-    <filter
-       inkscape:collect="always"
        id="filter11027"
-       x="-0.31819805"
+       x="-0.31819806"
        width="1.6363961"
-       y="-0.28284271"
+       y="-0.2828427"
        height="1.5656854">
       <feGaussianBlur
          inkscape:collect="always"
@@ -110,9 +62,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.171875"
-     inkscape:cx="32"
-     inkscape:cy="32"
+     inkscape:zoom="13.013889"
+     inkscape:cx="36"
+     inkscape:cy="36"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="1920"
@@ -126,7 +78,7 @@
     <inkscape:grid
        type="xygrid"
        id="grid10137"
-       empspacing="16"
+       empspacing="8"
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true" />
@@ -147,20 +99,18 @@
      inkscape:label="Taso 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-988.3622)">
-    <path
-       sodipodi:type="arc"
+     transform="translate(0,-980.3622)">
+    <ellipse
        style="fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter11027)"
        id="path11021"
-       sodipodi:cx="1"
-       sodipodi:cy="17"
-       sodipodi:rx="8"
-       sodipodi:ry="9"
-       d="M 9,17 A 8,9 0 1 1 -7,17 8,9 0 1 1 9,17 z"
-       transform="matrix(2,0,0,1.7777778,30,990.13998)" />
+       transform="matrix(2.4825897,0,0,2.2998154,33.517411,977.26534)"
+       cx="1"
+       cy="17"
+       rx="8"
+       ry="9" />
     <path
        style="fill:#ff6319;fill-opacity:1;stroke:none"
-       d="m 15,1020.3692 c 0,-9.3849 6.824844,-14.7045 17.000017,-28.27137 C 42.17519,1005.6647 49,1010.9843 49,1020.3692 c 0,9.3851 -7.611142,16.993 -17,16.993 -9.388858,0 -17,-7.6079 -17,-16.993 z"
+       d="m 15,1016.3709 c 0,-11.5932 8.43069,-18.16443 21.000021,-34.92351 C 48.569352,998.20647 57,1004.7777 57,1016.3709 c 0,11.5933 -9.401999,20.9913 -21,20.9913 -11.598001,0 -21,-9.398 -21,-20.9913 z"
        id="path10139"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="scsss" />
