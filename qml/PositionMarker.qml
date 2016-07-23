@@ -25,7 +25,8 @@ MapQuickItem {
     anchorPoint.y: sourceItem.height/2
     coordinate: gps.position.coordinate
     sourceItem: Image {
-        source: "icons/position.png"
+        smooth: false
+        source: app.getIcon("position")
     }
     Behavior on coordinate {
         CoordinateAnimation {

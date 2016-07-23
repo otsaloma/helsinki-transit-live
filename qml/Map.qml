@@ -19,6 +19,7 @@
 import QtQuick 2.0
 import QtLocation 5.0
 import QtPositioning 5.3
+import Sailfish.Silica 1.0
 import "."
 
 Map {
@@ -30,6 +31,7 @@ Map {
     minimumZoomLevel: 6
     plugin: MapPlugin {}
 
+    property bool ready: false
     property bool showMenuButton: true
     property var  vehicles: []
     property real zoomLevelPrev: 8
@@ -48,16 +50,16 @@ Map {
         // XXX: For some reason we need to do something to trigger
         // a redraw to avoid only a part of tiles being displayed
         // right at start before any user panning or zooming.
-        id: timer
+        id: patchTimer
         interval: 1000
         repeat: true
-        running: app.running
+        running: map.ready && app.running
         triggeredOnStart: true
         property int timesRun: 0
         onTriggered: {
             map.pan(+2, -2);
             map.pan(-2, +2);
-            timer.running = timesRun++ < 5;
+            patchTimer.running = timesRun++ < 5;
         }
     }
 
@@ -68,7 +70,6 @@ Map {
 
     Component.onCompleted: {
         // Use a daytime gray street map if available.
-        // Needed properties available since Sailfish OS 1.1.0.38.
         for (var i = 0; i < map.supportedMapTypes.length; i++) {
             var type = map.supportedMapTypes[i];
             if (type.style  === MapType.GrayStreetMap &&
@@ -76,11 +77,13 @@ Map {
                 type.night  === false)
                 map.activeMapType = type;
         }
+        map.center = QtPositioning.coordinate(60.169, 24.941);
         map.centerOnPosition();
         gps.onInitialCenterChanged.connect(map.centerOnPosition);
         // XXX: Must set zoomLevel in onCompleted.
         // http://bugreports.qt-project.org/browse/QTBUG-40779
-        map.setZoomLevel(13);
+        map.setZoomLevel(Screen.sizeCategory >= Screen.Large ? 14 : 13);
+        map.ready = true;
     }
 
     gesture.onPinchFinished: {

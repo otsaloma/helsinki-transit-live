@@ -79,7 +79,7 @@ def atomic_open(path, mode="w", *args, **kwargs):
             # Fall back on a non-atomic operation.
             shutil.move(temp_path, path)
     finally:
-        with silent(Exception, tb=True):
+        with silent(Exception):
             os.remove(temp_path)
 
 def locked_method(function):

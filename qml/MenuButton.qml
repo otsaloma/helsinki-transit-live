@@ -22,11 +22,11 @@ import "."
 
 IconButton {
     anchors.bottom: parent.bottom
+    anchors.bottomMargin: Theme.paddingSmall
     anchors.horizontalCenter: parent.horizontalCenter
-    height: icon.height
-    icon.source: "icons/menu.png"
+    icon.smooth: false
+    icon.source: app.getIcon("menu")
     visible: py.ready && parent.showMenuButton
-    width: icon.width
     z: 600
     onClicked: app.pageStack.push("FilterPage.qml");
 }

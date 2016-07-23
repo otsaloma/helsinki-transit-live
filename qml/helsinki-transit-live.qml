@@ -46,4 +46,17 @@ ApplicationWindow {
             py.call("htl.app.start", [], null) :
             py.call("htl.app.stop", [], null);
     }
+    function getIcon(name) {
+        // Return path to icon suitable for user's screen,
+        // finding the closest match to Theme.pixelRatio.
+        var ratios = [1.00, 1.25, 1.50, 1.75, 2.00];
+        var minIndex = -1, minDiff = 1000;
+        for (var i = 0; i < ratios.length; i++) {
+            var diff = Math.abs(Theme.pixelRatio - ratios[i]);
+            minIndex = diff < minDiff ? i : minIndex;
+            minDiff = Math.min(minDiff, diff);
+        }
+        var ratio = ratios[minIndex].toFixed(2);
+        return "icons/%1@%2.png".arg(name).arg(ratio);
+    }
 }

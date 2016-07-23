@@ -19,6 +19,7 @@
 import QtQuick 2.0
 import QtLocation 5.0
 import QtPositioning 5.3
+import Sailfish.Silica 1.0
 
 MapQuickItem {
     id: vehicle
@@ -28,7 +29,8 @@ MapQuickItem {
         Image {
             id: image
             rotation: vehicle.bearing
-            source: "icons/%1.png".arg(vehicle.type)
+            smooth: false
+            source: app.getIcon(vehicle.type)
         }
         Rectangle {
             id: rectangle
@@ -43,7 +45,7 @@ MapQuickItem {
             color: "white"
             font.bold: true
             font.family: "sans-serif"
-            font.pixelSize: 16
+            font.pixelSize: Math.round(Theme.pixelRatio*16)
             text: vehicle.line
             textFormat: Text.PlainText
         }

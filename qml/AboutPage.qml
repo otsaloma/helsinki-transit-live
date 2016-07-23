@@ -38,10 +38,11 @@ Page {
             ListItemLabel {
                 font.pixelSize: Theme.fontSizeSmall
                 height: Theme.itemSizeExtraSmall
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: implicitWidth > parent.width -
+                    anchors.leftMargin - anchors.rightMargin ?
+                    Text.AlignLeft : Text.AlignHCenter
                 linkColor: Theme.highlightColor
                 text: '<a href="http://github.com/otsaloma/helsinki-transit-live">http://github.com/otsaloma/helsinki-transit-live</a>'
-                wrapMode: Text.WordWrap
                 onLinkActivated: Qt.openUrlExternally(link);
             }
             ListItemLabel {
@@ -51,9 +52,11 @@ Page {
                 text: "Copyright © 2013–2016 Osmo Salomaa"
             }
             ListItemLabel {
-                color: Theme.primaryColor
-                font.pixelSize: Theme.fontSizeExtraSmall
+                font.pixelSize: Theme.fontSizeSmall
                 height: implicitHeight + Theme.paddingLarge
+                horizontalAlignment: implicitWidth > parent.width -
+                    anchors.leftMargin - anchors.rightMargin ?
+                    Text.AlignLeft : Text.AlignHCenter
                 text: "Helsinki Transit Live is free software released under the GNU General Public License (GPL), version 3 or later."
                 wrapMode: Text.WordWrap
             }

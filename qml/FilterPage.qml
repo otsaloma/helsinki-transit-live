@@ -29,12 +29,16 @@ Page {
     SilicaGridView {
         id: view
         anchors.fill: parent
-        anchors.leftMargin: Theme.paddingLarge/2
-        cellWidth: (page.width - 1.5*Theme.paddingLarge) / 3
+        anchors.leftMargin: Theme.horizontalPageMargin
+        cellWidth: {
+            // Use a dynamic column count based on available screen width.
+            var width = page.isPortrait ? Screen.width : Screen.height;
+            width = width - 2*Theme.horizontalPageMargin;
+            return width / Math.floor(width / (Theme.pixelRatio*160));
+        }
         // Prevent list items from stealing focus.
         currentIndex: -1
         delegate: ListItem {
-            id: listItem
             clip: true
             contentHeight: lineSwitch.height
             width: view.cellWidth
