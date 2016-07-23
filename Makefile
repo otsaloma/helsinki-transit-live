@@ -15,6 +15,7 @@ check:
 clean:
 	rm -rf dist
 	rm -rf __pycache__ */__pycache__ */*/__pycache__
+	rm -rf .cache */.cache */*/.cache
 	rm -f rpm/*.rpm
 
 dist:
