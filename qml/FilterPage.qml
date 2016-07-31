@@ -33,7 +33,7 @@ Page {
             // Use a dynamic column count based on available screen width.
             var width = page.isPortrait ? Screen.width : Screen.height;
             width = width - Theme.horizontalPageMargin;
-            return width / Math.floor(width / (Theme.pixelRatio*180));
+            return width / Math.floor(width / (Theme.pixelRatio*170));
         }
         // Prevent list items from stealing focus.
         currentIndex: -1
