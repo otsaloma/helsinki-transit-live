@@ -1,7 +1,7 @@
 # -*- coding: us-ascii-unix -*-
 
 NAME       = harbour-helsinki-transit-live
-VERSION    = 1.3.2
+VERSION    = 1.4
 
 DESTDIR    =
 PREFIX     = /usr
