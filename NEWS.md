@@ -1,3 +1,9 @@
+2016-11-26: Helsinki Transit Live 1.4.205
+=========================================
+
+* Adapt to Nokia/HERE map plugin changes in Sailfish OS 2.0.5
+  "Haapajoki"
+
 2016-08-04: Helsinki Transit Live 1.4
 =====================================
 
