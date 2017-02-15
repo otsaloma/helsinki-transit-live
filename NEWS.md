@@ -1,3 +1,9 @@
+2017-02-15: Helsinki Transit Live 1.4.210
+=========================================
+
+* Work around PyOtherSide's call_sync being broken in Sailfish OS
+  2.1.0.9 "Iijoki"
+
 2016-11-26: Helsinki Transit Live 1.4.205
 =========================================
 
