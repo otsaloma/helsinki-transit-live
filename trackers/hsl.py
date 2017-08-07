@@ -57,7 +57,7 @@ class Tracker:
         """Fetch the last known positions of vehicles."""
         self._utime = time.time()
         url = "http://api.digitransit.fi/realtime/vehicle-positions/v1/hfp/journey/"
-        vehicles = htl.http.request_json(url)
+        vehicles = htl.http.get_json(url)
         lines = htl.app.filters.get_lines()
         pyotherside.send("remove-all-vehicles")
         for topic, payload in vehicles.items():
@@ -91,7 +91,7 @@ class Tracker:
         # that support realtime information, so we have to get the
         # full list of lines from the Digitransit routing API.
         url = "http://api.digitransit.fi/routing/v1/routers/hsl/index/routes"
-        lines = htl.http.request_json(url)
+        lines = htl.http.get_json(url)
         lines = [{
             "code": x["id"].replace("HSL:", ""),
             "line": x.get("shortName", self._parse_line(x["id"])),

@@ -21,12 +21,23 @@ import htl
 import http.client
 import json
 import queue
+import re
 import sys
 import threading
 import urllib.parse
 
-HEADERS = {"Connection": "Keep-Alive",
-           "User-Agent": "helsinki-transit-live/{}".format(htl.__version__)}
+BROKEN_CONNECTION_ERRORS = [
+    BrokenPipeError,
+    ConnectionResetError,
+    http.client.BadStatusLine,
+]
+
+HEADERS = {
+    "Connection": "Keep-Alive",
+    "User-Agent": "helsinki-transit-live/{}".format(htl.__version__),
+}
+
+RE_LOCALHOST = re.compile(r"://(127.0.0.1|localhost)\b")
 
 
 class ConnectionPool:
@@ -36,6 +47,7 @@ class ConnectionPool:
     def __init__(self, threads):
         """Initialize a :class:`ConnectionPool` instance."""
         self._alive = True
+        self._all_connections = set()
         self._lock = threading.Lock()
         self._queue = {}
         self._threads = threads
@@ -83,7 +95,14 @@ class ConnectionPool:
             "http":  http.client.HTTPConnection,
             "https": http.client.HTTPSConnection,
         }[components.scheme]
-        return cls(components.netloc, timeout=15)
+        # Use a longer timeout for localhost connections where connection
+        # problems are unlikely, but inefficient software and hardware
+        # can make e.g. a routing query take a long time.
+        # https://github.com/otsaloma/poor-maps/issues/23
+        timeout = (600 if RE_LOCALHOST.search(url) else 15)
+        connection = cls(components.netloc, timeout=timeout)
+        self._all_connections.add(connection)
+        return connection
 
     def put(self, url, connection):
         """Return `connection` to the pool of connections."""
@@ -104,12 +123,9 @@ class ConnectionPool:
     def terminate(self):
         """Close all connections and terminate."""
         if not self._alive: return
-        for key in self._queue:
-            with htl.util.silent(queue.Empty):
-                while True:
-                    connection = self._queue[key].get(block=False)
-                    with htl.util.silent(Exception):
-                        connection.close()
+        for connection in self._all_connections:
+            with htl.util.silent(Exception):
+                connection.close()
         # Mark as dead so that subsequent operations fail.
         self._alive = False
 
@@ -117,63 +133,120 @@ class ConnectionPool:
 pool = ConnectionPool(1)
 
 
-def request_json(url, encoding="utf_8", retry=1):
-    """
-    Request, parse and return JSON data at `url`.
+def get(url, encoding=None, retry=1, headers=None):
+    """Make a HTTP GET request at `url` and return response."""
+    return _request("GET",
+                    url,
+                    body=None,
+                    encoding=encoding,
+                    retry=retry,
+                    headers=headers)
 
-    Try again `retry` times in some particular cases that imply
-    a connection error.
-    """
-    text = request_url(url, encoding, retry)
-    if not text.strip() and retry > 0:
-        # A blank return is probably an error.
-        pool.reset(url)
-        text = request_url(url, encoding, retry-1)
-    try:
-        if not text.strip():
-            raise ValueError("Expected JSON, received blank")
-        return json.loads(text)
-    except Exception as error:
-        print("Failed to parse JSON data: {}: {}"
-              .format(error.__class__.__name__, str(error)),
-              file=sys.stderr)
-        raise # Exception
+def get_json(url, encoding="utf_8", retry=1, headers=None):
+    """Make a HTTP GET request at `url` and return response parsed as JSON."""
+    return _request_json("GET",
+                         url,
+                         body=None,
+                         encoding=encoding,
+                         retry=retry,
+                         headers=headers)
 
-def request_url(url, encoding=None, retry=1):
-    """
-    Request and return data at `url`.
+def post(url, body, encoding=None, retry=1, headers=None):
+    """Make a HTTP POST request at `url` and return response."""
+    return _request("POST",
+                    url,
+                    body=body,
+                    encoding=encoding,
+                    retry=retry,
+                    headers=headers)
 
-    If `encoding` is ``None``, return bytes, otherwise decode data
-    to text using `encoding`. Try again `retry` times in some particular
-    cases that imply a connection error.
+def post_json(url, body, encoding="utf_8", retry=1, headers=None):
+    """Make a HTTP POST request at `url` and return response parsed as JSON."""
+    return _request_json("POST",
+                         url,
+                         body=body,
+                         encoding=encoding,
+                         retry=retry,
+                         headers=headers)
+
+def _request(method, url, body=None, encoding=None, retry=1, headers=None):
     """
-    print("Requesting {}".format(url))
+    Make a HTTP request at `url` using `method`.
+
+    `method` should be the name of a HTTP method, e.g. "GET" or "POST". `body`
+    should be ``None`` for methods that don't expect data (e.g. GET) or the
+    data to send (usually a string) for methods that do expect data (e.g. POST).
+    If `encoding` is ``None``, return bytes, otherwise decode response data to
+    text using `encoding`. Try again `retry` times in some particular cases
+    that imply a connection error. `headers` should be a dictionary of custom
+    headers to add to the defaults :attr:`http.HEADERS`.
+    """
+    print("{} {}".format(method, url))
     try:
         connection = pool.get(url)
-        connection.request("GET", url, headers=HEADERS)
+        # Do relative requests (without scheme and netloc)
+        # for better compatibility with different servers.
+        components = urllib.parse.urlparse(url)
+        components = ("", "") + components[2:]
+        path = urllib.parse.urlunparse(components)
+        headall = HEADERS.copy()
+        headall.update(headers or {})
+        if isinstance(body, str):
+            # UTF-8 is likely to work in most cases,
+            # otherwise caller can encode and give bytes.
+            body = body.encode("utf_8")
+        connection.request(method, path, body, headers=headall)
         response = connection.getresponse()
         # Always read response to avoid
         # http.client.ResponseNotReady: Request-sent.
         blob = response.read()
-        if response.status != 200:
-            raise Exception("Server responded {}: {}"
-                            .format(repr(response.status),
-                                    repr(response.reason)))
-
+        if not 200 <= response.status <= 299:
+            raise Exception("Server responded {}: {}".format(
+                repr(response.status), repr(response.reason)))
         if encoding is None: return blob
         return blob.decode(encoding, errors="replace")
     except Exception as error:
         if not pool.is_alive(): raise
         connection.close()
         connection = None
-        # These probably mean that the connection was broken.
-        broken = (BrokenPipeError, http.client.BadStatusLine)
+        broken = tuple(BROKEN_CONNECTION_ERRORS)
         if not isinstance(error, broken) or retry == 0:
-            print("Failed to download data: {}: {}"
-                  .format(error.__class__.__name__, str(error)),
+            name = error.__class__.__name__
+            print("{} failed: {}: {}"
+                  .format(method, name, str(error)),
                   file=sys.stderr)
             raise # Exception
+        # If we haven't successfully returned a response,
+        # nor reraised an Exception, we move on to try again.
+        assert retry > 0
     finally:
         pool.put(url, connection)
-    assert retry > 0
-    return request_url(url, encoding, retry-1)
+    return _request(method, url, body, encoding, retry-1, headers)
+
+def _request_json(method, url, body=None, encoding="utf_8", retry=1, headers=None):
+    """
+    Make a HTTP request, return response parsed as JSON.
+
+    `method` should be the name of a HTTP method, e.g. "GET" or "POST". `body`
+    should be ``None`` for methods that don't expect data (e.g. GET) or the
+    data to send (usually a string) for methods that do expect data (e.g. POST).
+    If `encoding` is ``None``, return bytes, otherwise decode response data to
+    text using `encoding`. Try again `retry` times in some particular cases
+    that imply a connection error. `headers` should be a dictionary of custom
+    headers to add to the defaults :attr:`http.HEADERS`.
+    """
+    text = _request(method, url, body, encoding, retry, headers)
+    if not text.strip() and retry > 0:
+        # A blank return is probably an error.
+        pool.reset(url)
+        text = _request(method, url, body, encoding, retry, headers)
+    try:
+        if not text.strip():
+            raise ValueError("Expected JSON, received blank")
+        return json.loads(text)
+    except Exception as error:
+        name = error.__class__.__name__
+        print("Failed to parse JSON data: {}: {}"
+              .format(name, str(error)),
+              file=sys.stderr)
+        raise # Exception
