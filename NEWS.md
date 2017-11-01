@@ -1,3 +1,9 @@
+2017-11-01: Helsinki Transit Live 1.5
+=====================================
+
+* Fix error loading list of lines from the API
+* Fix string escapes in Python calls from QML
+
 2017-02-15: Helsinki Transit Live 1.4.210
 =========================================
 
