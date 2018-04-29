@@ -2,7 +2,7 @@
 
 NAME       = harbour-helsinki-transit-live
 VERSION    = 1.5
-
+RELEASE    = $(NAME)-$(VERSION)
 DESTDIR    =
 PREFIX     = /usr
 DATADIR    = $(DESTDIR)$(PREFIX)/share/$(NAME)
@@ -20,9 +20,9 @@ clean:
 
 dist:
 	$(MAKE) clean
-	mkdir -p dist/$(NAME)-$(VERSION)
-	cp -r `cat MANIFEST` dist/$(NAME)-$(VERSION)
-	tar -C dist -cJf dist/$(NAME)-$(VERSION).tar.xz $(NAME)-$(VERSION)
+	mkdir -p dist/$(RELEASE)
+	cp -r `cat MANIFEST` dist/$(RELEASE)
+	tar -C dist -cJf dist/$(RELEASE).tar.xz $(RELEASE)
 
 install:
 	@echo "Installing Python files..."
@@ -56,11 +56,11 @@ install:
 rpm:
 	$(MAKE) dist
 	mkdir -p $$HOME/rpmbuild/SOURCES
-	cp dist/$(NAME)-$(VERSION).tar.xz $$HOME/rpmbuild/SOURCES
-	rm -rf $$HOME/rpmbuild/BUILD/$(NAME)-$(VERSION)
+	cp dist/$(RELEASE).tar.xz $$HOME/rpmbuild/SOURCES
+	rm -rf $$HOME/rpmbuild/BUILD/$(RELEASE)
 	rpmbuild -ba --nodeps rpm/$(NAME).spec
-	cp $$HOME/rpmbuild/RPMS/noarch/$(NAME)-$(VERSION)-*.rpm rpm
-	cp $$HOME/rpmbuild/SRPMS/$(NAME)-$(VERSION)-*.rpm rpm
+	cp $$HOME/rpmbuild/RPMS/noarch/$(RELEASE)-*.rpm rpm
+	cp $$HOME/rpmbuild/SRPMS/$(RELEASE)-*.rpm rpm
 
 test:
 	py.test htl trackers
