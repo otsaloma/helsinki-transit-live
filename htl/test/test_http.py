@@ -24,8 +24,8 @@ class TestConnectionPool(htl.test.TestCase):
 
     def setup_method(self, method):
         self.pool = htl.http.ConnectionPool(2)
-        self.http_url = "http://github.com/otsaloma/helsinki-transit-live"
-        self.https_url = "https://github.com/otsaloma/helsinki-transit-live"
+        self.http_url = "http://otsaloma.io/"
+        self.https_url = "https://otsaloma.io/"
 
     def teardown_method(self, method):
         self.pool.terminate()
@@ -82,30 +82,22 @@ class TestConnectionPool(htl.test.TestCase):
 class TestModule(htl.test.TestCase):
 
     def test_get(self):
-        url = "https://github.com/otsaloma/helsinki-transit-live"
+        url = "https://otsaloma.io/"
         blob = htl.http.get(url, encoding="utf_8")
         assert blob.strip().startswith("<!DOCTYPE html>")
 
     def test_get__error(self):
-        url = "http://xxx.yyy.zzz/"
+        url = "https://xxx.yyy.zzz/"
         self.assert_raises(Exception, htl.http.get, url)
 
     def test_get__non_200(self):
-        url = "http://www.google.com/xxx/yyy/zzz"
+        url = "https://otsaloma.io/xxx/yyy/zzz"
         self.assert_raises(Exception, htl.http.get, url)
 
     def test_get_json(self):
-        url = "https://api.github.com/repos/otsaloma/helsinki-transit-live/releases"
-        assert isinstance(htl.http.get_json(url), list)
+        url = "https://otsaloma.io/pub/test.json"
+        assert isinstance(htl.http.get_json(url), dict)
 
     def test_get_json__error(self):
-        url = "https://github.com/otsaloma/helsinki-transit-live"
+        url = "https://otsaloma.io/pub/test.xml"
         self.assert_raises(Exception, htl.http.get_json, url)
-
-    def test_post(self):
-        blob = htl.http.post("http://httpbin.org/post", "Hello!")
-        assert isinstance(blob, bytes)
-
-    def test_post_json(self):
-        blob = htl.http.post_json("http://httpbin.org/post", "Hello!")
-        assert blob["data"] == "Hello!"
