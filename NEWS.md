@@ -1,3 +1,9 @@
+2018-06-17: Helsinki Transit Live 1.6
+=====================================
+
+* Adapt to API changes
+* Adjust starting zoom level based on screen DPI
+
 2017-11-01: Helsinki Transit Live 1.5
 =====================================
 
