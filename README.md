@@ -9,8 +9,8 @@ real-time locations of Helsinki Region Transport (HSL) public transport
 vehicles. It uses the [Digitransit HSL MQTT API][1] and should display
 data matching the [official web interface][2].
 
-[1]: http://digitransit.fi/en/developers/service-catalogue/internal-components/navigator-server/
-[2]: http://dev.hsl.fi/live/
+[1]: https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/
+[2]: https://dev.hsl.fi/live/
 
 Helsinki Transit Live is free software released under the GNU General
 Public License (GPL), see the file [`COPYING`](COPYING) for details.

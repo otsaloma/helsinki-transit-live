@@ -18,19 +18,16 @@
 """
 Public transport vehicles in the Helsinki region.
 
-http://digitransit.fi/en/developers/service-catalogue/apis/realtime-api/
-http://digitransit.fi/en/developers/service-catalogue/internal-components/navigator-server/
-http://dev.hsl.fi/live/
+https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/
 """
 
 import htl
 import json
 import paho.mqtt.client
-import pyotherside
 import sys
 import time
 
-DOMAIN = "213.138.147.225"
+DOMAIN = "mqtt.hsl.fi"
 PORT = 1883
 
 
@@ -62,8 +59,7 @@ class Tracker:
         pyotherside.send("remove-all-vehicles")
         for topic, payload in vehicles.items():
             parts = topic.split("/")
-            if len(parts) < 6: continue
-            if not parts[5] in lines: continue
+            if not parts[8] in lines: continue
             message = paho.mqtt.client.MQTTMessage()
             message.topic = topic
             message.payload = json.dumps(payload)
@@ -90,7 +86,7 @@ class Tracker:
         # XXX: There doesn't seem to be any list of lines available
         # that support realtime information, so we have to get the
         # full list of lines from the Digitransit routing API.
-        url = "http://api.digitransit.fi/routing/v1/routers/hsl/index/routes"
+        url = "https://api.digitransit.fi/routing/v1/routers/hsl/index/routes"
         lines = htl.http.get_json(url)
         lines = [{
             "code": x["id"].replace("HSL:", ""),
@@ -123,18 +119,19 @@ class Tracker:
             print("Unsubscribe: {}".format(topic))
             self._client.unsubscribe(topic)
 
-    @htl.util.silent(Exception)
+    @htl.util.silent(Exception, tb=True)
     def _on_message(self, client, userdata, message):
         """Parse and relay updates to positions of vehicles."""
+        print("Message: {}".format(message.topic))
         self._utime = time.time()
         topic = self._ensure_str(message.topic).split("/")
         payload = self._ensure_str(message.payload)
         payload = json.loads(payload)["VP"]
         vehicle = {
-            "id":   topic[4],
-            "code": topic[5],
-            "line": self._parse_line(topic[5]),
-            "type": self._parse_type(topic[3]),
+            "id":   "/".join(topic[6:8]),
+            "code": topic[8],
+            "line": self._parse_line(topic[8]),
+            "type": self._parse_type(topic[5]),
             "x":    float(payload["long"]),
             "y":    float(payload["lat"]),
         }
@@ -147,7 +144,6 @@ class Tracker:
     def _parse_area(self, code):
         """Parse operation area from `code`."""
         # codes are HSL: + shortened JORE-code.
-        # http://developer.reittiopas.fi/pages/en/http-get-interface-version-2.php
         code = code.replace("HSL:", "")
         if len(code) < 1: return ""
         return {"1": "Helsinki",
@@ -160,7 +156,6 @@ class Tracker:
     def _parse_line(self, code):
         """Parse human readable line number from `code`."""
         # codes are HSL: + shortened JORE-code.
-        # http://developer.reittiopas.fi/pages/en/http-get-interface-version-2.php
         code = code.replace("HSL:", "")
         if code.startswith(("13", "3")):
             # Metro and trains.
@@ -173,11 +168,13 @@ class Tracker:
 
     def _parse_type(self, type):
         """Parse human readable type from `type`."""
-        return dict(rail="train",
+        return dict(bus="bus",
+                    ferry="ferry",
+                    metro="metro",
+                    rail="train",
                     subway="metro",
-                    tram="tram",
-                    bus="bus",
-                    ferry="ferry").get(type.lower(), "")
+                    train="train",
+                    tram="tram").get(type.lower(), "")
 
     def quit(self):
         """Stop monitoring and disconnect the client."""
@@ -204,7 +201,7 @@ class Tracker:
         topics = []
         filters = htl.app.filters.get_filters()
         for line in filters.get("lines", []):
-            topics.append("/hfp/journey/+/+/{}/#".format(line))
+            topics.append("/hfp/v1/journey/+/+/+/+/{}/#".format(line))
         changed = False
         for topic in set(self._topics) - set(topics):
             print("Unsubscribe: {}".format(topic))

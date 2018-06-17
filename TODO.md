@@ -1,4 +1,5 @@
-Helsinki Transit Live 1.5.1/1.6
-===============================
+Helsinki Transit Live 1.6
+=========================
 
+* [x] Adapt to API changes
 * [x] Adjust starting zoom level based on screen DPI
