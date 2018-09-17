@@ -1,8 +1,7 @@
 Helsinki Transit Live
 =====================
 
-[![Build Status](https://travis-ci.org/otsaloma/helsinki-transit-live.svg)](
-https://travis-ci.org/otsaloma/helsinki-transit-live)
+![Not Maintained](https://img.shields.io/maintenance/no/2018.svg)
 
 Helsinki Transit Live is an application for Sailfish OS to view
 real-time locations of Helsinki Region Transport (HSL) public transport
